@@ -34,4 +34,4 @@ Cada linha descreve um problema real encontrado durante a construção e o que f
 
 ## Regra prática
 
-Antes de confiar em um número ou em um trecho de código, confira a origem. A estimativa de queda de CVEs únicas na limpeza de pacotes órfãos estava errada, porque os pacotes removidos eram pequenos. O helper do Grafana seguia uma API diferente da documentada. Os dois erros foram corrigidos ao comparar com dados reais e com a documentação oficial.
+Antes de confiar em um número ou em um trecho de código, confira a origem. A estimativa de queda de CVEs únicas na limpeza de pacotes órfãos estava errada, porque os pacotes removidos eram pequenos. 
