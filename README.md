@@ -67,7 +67,7 @@ O template foi validado em Zabbix 7.0 com agente clássico 7.0.29 e com agent2.
 Em cada host Linux, como root, a partir de uma cópia do repositório.
 
 ```bash
-git clone https://github.com/SEU_USUARIO/zabbix-linux-vulnerabilidades.git
+git clone https://github.com/oblivionimous/zabbix-linux-vulnerabilidades.git
 cd zabbix-linux-vulnerabilidades
 RUN_NOW=1 ./scripts/install.sh
 ./scripts/validate.sh
