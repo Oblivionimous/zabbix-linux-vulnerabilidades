@@ -32,13 +32,6 @@ Cada linha descreve um problema real encontrado durante a construção e o que f
 | Sem dados em um host que executa Zabbix proxy | `ServerActive` com dois endereços separados por vírgula, tratados como HA, com o próprio host primeiro | Apontar somente para o servidor que monitora o host |
 | `host [X] not found` no log do agente | Nome técnico do host no Zabbix diferente do `Hostname` do agente ou configuração ainda não sincronizada | Igualar os nomes e aguardar a sincronização |
 
-## Grafana
-
-| Problema | Causa | Solução |
-|---|---|---|
-| Helper de parse que não registrava | Uso do objeto global `Handlebars` | Usar `context.handlebars.registerHelper`, conforme a documentação do plugin |
-| Zabbix sem tabela para JSON | Nenhum widget do Zabbix interpreta JSON | Painel Business Text no Grafana |
-
 ## Regra prática
 
 Antes de confiar em um número ou em um trecho de código, confira a origem. A estimativa de queda de CVEs únicas na limpeza de pacotes órfãos estava errada, porque os pacotes removidos eram pequenos. O helper do Grafana seguia uma API diferente da documentada. Os dois erros foram corrigidos ao comparar com dados reais e com a documentação oficial.
