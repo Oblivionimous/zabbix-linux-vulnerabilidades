@@ -12,7 +12,7 @@ Há dois caminhos equivalentes. O instalador automático faz tudo em um comando.
 ## Instalador automático
 
 ```bash
-git clone https://github.com/SEU_USUARIO/zabbix-linux-vulnerabilidades.git
+git clone https://github.com/oblivionimous/zabbix-linux-vulnerabilidades.git
 cd zabbix-linux-vulnerabilidades
 RUN_NOW=1 ./scripts/install.sh
 ./scripts/validate.sh
