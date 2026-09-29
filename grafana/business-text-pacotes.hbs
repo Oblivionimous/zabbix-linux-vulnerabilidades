@@ -1,0 +1,26 @@
+{{!--
+  Business Text > Content
+  Render template  All rows
+  Query            item "Vuln: ranking de pacotes" (texto JSON) na fonte de dados Zabbix
+  Ajuste "Value" abaixo para o nome real do campo (Inspect > Data).
+--}}
+<table style="width:100%; font-size:12px; border-collapse:collapse">
+  <thead>
+    <tr style="text-align:left">
+      <th>Pacote</th><th>Critical</th><th>High</th><th>Medium</th><th>Low</th><th>Unknown</th><th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each (parseJSON data.0.Value)}}
+    <tr style="border-top:1px solid #444">
+      <td>{{package}}</td>
+      <td>{{critical}}</td>
+      <td>{{high}}</td>
+      <td>{{medium}}</td>
+      <td>{{low}}</td>
+      <td>{{unknown}}</td>
+      <td>{{total}}</td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>

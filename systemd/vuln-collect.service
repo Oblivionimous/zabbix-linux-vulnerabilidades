@@ -1,0 +1,13 @@
+[Unit]
+Description=Coleta de estatisticas de vulnerabilidade para o Zabbix
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/vuln-collect.py
+Nice=19
+IOSchedulingClass=idle
+CPUQuota=50%
+MemoryMax=2G
+TimeoutStartSec=90min

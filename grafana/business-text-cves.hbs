@@ -1,0 +1,25 @@
+{{!--
+  Business Text > Content
+  Render template  All rows
+  Query            item "Vuln: ranking de CVEs" (texto JSON) na fonte de dados Zabbix
+  Ajuste "Value" abaixo para o nome real do campo (Inspect > Data).
+--}}
+<table style="width:100%; font-size:12px; border-collapse:collapse">
+  <thead>
+    <tr style="text-align:left">
+      <th>CVE</th><th>Severidade</th><th>CVSS</th><th>Corrigível</th><th>Classe</th><th>Pacotes</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each (parseJSON data.0.Value)}}
+    <tr style="border-top:1px solid #444">
+      <td>{{cve}}</td>
+      <td>{{severity}}</td>
+      <td>{{score}}</td>
+      <td>{{#if fixable}}sim{{else}}não{{/if}}</td>
+      <td>{{class}}</td>
+      <td>{{packages}}</td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>

@@ -1,0 +1,10 @@
+# Saidas geradas em execucao local
+report.json
+*.bak
+*.bak[0-9]
+trivy_full.json
+__pycache__/
+*.pyc
+.venv/
+.idea/
+.vscode/

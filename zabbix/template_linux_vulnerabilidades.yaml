@@ -1,0 +1,912 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d401
+      name: Templates/Security
+  templates:
+    - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d402
+      template: 'Linux vulnerabilidades by Zabbix agent active'
+      name: 'Linux vulnerabilidades by Zabbix agent active'
+      description: |
+        Lê o arquivo /var/lib/zabbix-vuln/report.json, gerado pelo script /usr/local/sbin/vuln-collect.py através do timer systemd vuln-collect.timer.
+        Consolida vulnerabilidades do trivy e advisories nativos do gerenciador de pacotes, com itens numéricos para o Zabbix e listas em texto para o Grafana.
+        Suporta Rocky, RHEL, AlmaLinux e derivados via dnf ou yum, e Debian ou Ubuntu via apt. Os itens de advisories nativos ficam não suportados em hosts Debian ou Ubuntu.
+      vendor:
+        name: 'Mauro Paiva'
+        version: '7.0'
+      groups:
+        - name: Templates/Security
+      items:
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d403
+          name: 'Vuln: relatório JSON'
+          type: ZABBIX_ACTIVE
+          key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          delay: 30m
+          history: '0'
+          value_type: TEXT
+          description: |
+            Conteúdo bruto do arquivo report.json, gerado pelo script vuln-collect.py através do timer vuln-collect.timer.
+            Item mestre sem histórico, usado apenas para alimentar os itens dependentes abaixo.
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: coleta
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d404
+          name: 'Vuln: status da coleta'
+          type: DEPENDENT
+          key: vuln.scan.status
+          history: 30d
+          value_type: CHAR
+          description: |
+            Resultado da última coleta, extraído de $.status.
+            O valor esperado é ok. O valor error indica falha no pkgmgr ou no trivy durante a execução do script.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.status
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: coleta
+          triggers:
+            - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d430
+              expression: 'last(/Linux vulnerabilidades by Zabbix agent active/vuln.scan.status)<>"ok"'
+              name: 'Vuln: coleta de vulnerabilidades com erro'
+              priority: WARNING
+              description: |
+                Dispara quando o status da última coleta não é ok.
+                Verifique o log com journalctl -u vuln-collect.service para identificar a causa.
+              tags:
+                - tag: scope
+                  value: availability
+                - tag: component
+                  value: coleta
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d405
+          name: 'Vuln: horário da última coleta'
+          type: DEPENDENT
+          key: vuln.scan.timestamp
+          history: 30d
+          value_type: UNSIGNED
+          units: unixtime
+          description: |
+            Data e hora da última execução bem sucedida da coleta, extraída de $.timestamp em formato unixtime.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.timestamp
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: coleta
+          triggers:
+            - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d431
+              expression: 'now()-last(/Linux vulnerabilidades by Zabbix agent active/vuln.scan.timestamp)>{$VULN.SCAN.MAX.AGE}'
+              name: 'Vuln: coleta desatualizada (mais de {$VULN.SCAN.MAX.AGE})'
+              priority: WARNING
+              description: |
+                Dispara quando o tempo desde a última coleta ultrapassa a macro VULN.SCAN.MAX.AGE.
+                Indica que o timer parou de rodar ou a execução está travando ou falhando silenciosamente.
+              tags:
+                - tag: scope
+                  value: availability
+                - tag: component
+                  value: coleta
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d406
+          name: 'Vuln: duração da coleta'
+          type: DEPENDENT
+          key: vuln.scan.duration
+          history: 30d
+          value_type: UNSIGNED
+          units: s
+          description: |
+            Tempo em segundos que a última coleta levou para terminar, extraído de $.duration.
+            Útil para ajustar o TimeoutStartSec do service e o CPUQuota conforme o tamanho do host.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.duration
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: coleta
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d407
+          name: 'Vuln: CVEs corrigíveis CRITICAL'
+          type: DEPENDENT
+          key: 'vuln.trivy.fixable[CRITICAL]'
+          history: 90d
+          value_type: UNSIGNED
+          description: |
+            Quantidade de CVEs únicas com severidade CRITICAL e correção disponível.
+            Soma pacotes do sistema operacional e bibliotecas de aplicações. Extraído de $.trivy.fixable.CRITICAL.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.trivy.fixable.CRITICAL
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: cve
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d408
+          name: 'Vuln: CVEs corrigíveis HIGH'
+          type: DEPENDENT
+          key: 'vuln.trivy.fixable[HIGH]'
+          history: 90d
+          value_type: UNSIGNED
+          description: |
+            Quantidade de CVEs únicas com severidade HIGH e correção disponível.
+            Soma pacotes do sistema operacional e bibliotecas de aplicações. Extraído de $.trivy.fixable.HIGH.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.trivy.fixable.HIGH
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: cve
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d409
+          name: 'Vuln: CVEs corrigíveis MEDIUM'
+          type: DEPENDENT
+          key: 'vuln.trivy.fixable[MEDIUM]'
+          history: 90d
+          value_type: UNSIGNED
+          description: |
+            Quantidade de CVEs únicas com severidade MEDIUM e correção disponível, extraído de $.trivy.fixable.MEDIUM.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.trivy.fixable.MEDIUM
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: cve
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d410
+          name: 'Vuln: CVEs corrigíveis LOW'
+          type: DEPENDENT
+          key: 'vuln.trivy.fixable[LOW]'
+          history: 90d
+          value_type: UNSIGNED
+          description: |
+            Quantidade de CVEs únicas com severidade LOW e correção disponível, extraído de $.trivy.fixable.LOW.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.trivy.fixable.LOW
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: cve
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d411
+          name: 'Vuln: CVEs corrigíveis CRITICAL em pacotes do SO'
+          type: DEPENDENT
+          key: 'vuln.trivy.fixable.os[CRITICAL]'
+          history: 90d
+          value_type: UNSIGNED
+          description: |
+            Quantidade de CVEs CRITICAL com correção disponível apenas em pacotes do sistema operacional, classe os-pkgs do trivy.
+            Não conta bibliotecas embutidas em aplicações. Extraído de $.trivy.fixable_by_class.os-pkgs.CRITICAL.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - "$.trivy.fixable_by_class['os-pkgs'].CRITICAL"
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: so
+          triggers:
+            - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d432
+              expression: 'last(/Linux vulnerabilidades by Zabbix agent active/vuln.trivy.fixable.os[CRITICAL])>{$VULN.OS.CRIT.MAX}'
+              name: 'Vuln: CVE CRITICAL corrigível em pacote do SO'
+              opdata: 'Quantidade: {ITEM.LASTVALUE1}'
+              priority: HIGH
+              description: |
+                Dispara quando existe ao menos uma CVE CRITICAL com correção disponível em pacote RPM ou DEB do sistema operacional.
+                Normalmente resolvida com dnf update ou apt upgrade seguido de reboot se necessário.
+              tags:
+                - tag: scope
+                  value: security
+                - tag: component
+                  value: so
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d412
+          name: 'Vuln: CVEs corrigíveis HIGH em pacotes do SO'
+          type: DEPENDENT
+          key: 'vuln.trivy.fixable.os[HIGH]'
+          history: 90d
+          value_type: UNSIGNED
+          description: |
+            Quantidade de CVEs HIGH com correção disponível em pacotes do sistema operacional, extraído de $.trivy.fixable_by_class.os-pkgs.HIGH.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - "$.trivy.fixable_by_class['os-pkgs'].HIGH"
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: so
+          triggers:
+            - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d433
+              expression: 'last(/Linux vulnerabilidades by Zabbix agent active/vuln.trivy.fixable.os[HIGH])>{$VULN.OS.HIGH.MAX}'
+              name: 'Vuln: CVEs HIGH corrigíveis em pacotes do SO acima do limite'
+              opdata: 'Quantidade: {ITEM.LASTVALUE1}'
+              priority: AVERAGE
+              description: |
+                Dispara quando o número de CVEs HIGH corrigíveis em pacotes do SO ultrapassa a macro VULN.OS.HIGH.MAX.
+                Ajuste a macro por host, template ou grupo conforme a criticidade do servidor.
+              tags:
+                - tag: scope
+                  value: security
+                - tag: component
+                  value: so
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d413
+          name: 'Vuln: CVEs corrigíveis CRITICAL em aplicações'
+          type: DEPENDENT
+          key: 'vuln.trivy.fixable.lang[CRITICAL]'
+          history: 90d
+          value_type: UNSIGNED
+          description: |
+            Quantidade de CVEs CRITICAL com correção disponível em bibliotecas de linguagem embutidas em binários de aplicações, como Go, Python ou Node.
+            Extraído de $.trivy.fixable_by_class.lang-pkgs.CRITICAL.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - "$.trivy.fixable_by_class['lang-pkgs'].CRITICAL"
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: aplicacao
+          triggers:
+            - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d434
+              expression: 'last(/Linux vulnerabilidades by Zabbix agent active/vuln.trivy.fixable.lang[CRITICAL])>{$VULN.LANG.CRIT.MAX}'
+              name: 'Vuln: CVE CRITICAL corrigível em aplicação ou biblioteca'
+              opdata: 'Quantidade: {ITEM.LASTVALUE1}'
+              priority: AVERAGE
+              description: |
+                Dispara quando existe CVE CRITICAL corrigível em biblioteca embutida em uma aplicação.
+                A correção depende de uma nova versão do software, não do gerenciador de pacotes do sistema operacional.
+              tags:
+                - tag: scope
+                  value: security
+                - tag: component
+                  value: aplicacao
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d414
+          name: 'Vuln: CVEs corrigíveis HIGH em aplicações'
+          type: DEPENDENT
+          key: 'vuln.trivy.fixable.lang[HIGH]'
+          history: 90d
+          value_type: UNSIGNED
+          description: |
+            Quantidade de CVEs HIGH com correção disponível em bibliotecas de aplicações, extraído de $.trivy.fixable_by_class.lang-pkgs.HIGH.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - "$.trivy.fixable_by_class['lang-pkgs'].HIGH"
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: aplicacao
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d415
+          name: 'Vuln: CVEs únicas CRITICAL'
+          type: DEPENDENT
+          key: 'vuln.trivy.cves[CRITICAL]'
+          history: 90d
+          value_type: UNSIGNED
+          description: |
+            Total de CVEs únicas com severidade CRITICAL encontradas pelo trivy, incluindo as que ainda não têm correção disponível.
+            Extraído de $.trivy.unique_cves.CRITICAL.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.trivy.unique_cves.CRITICAL
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: cve
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d416
+          name: 'Vuln: CVEs únicas HIGH'
+          type: DEPENDENT
+          key: 'vuln.trivy.cves[HIGH]'
+          history: 90d
+          value_type: UNSIGNED
+          description: |
+            Total de CVEs únicas com severidade HIGH encontradas pelo trivy, incluindo as que ainda não têm correção disponível.
+            Extraído de $.trivy.unique_cves.HIGH.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.trivy.unique_cves.HIGH
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: cve
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d417
+          name: 'Vuln: total de CVEs únicas'
+          type: DEPENDENT
+          key: vuln.trivy.cves.total
+          history: 90d
+          value_type: UNSIGNED
+          description: |
+            Total de CVEs únicas encontradas pelo trivy em todas as severidades, corrigíveis ou não. Extraído de $.trivy.unique_total.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.trivy.unique_total
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: cve
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d418
+          name: 'Vuln: idade da CVE CRITICAL/HIGH corrigível mais antiga (dias)'
+          type: DEPENDENT
+          key: vuln.trivy.oldest_days
+          history: 90d
+          value_type: UNSIGNED
+          description: |
+            Idade em dias da CVE CRITICAL ou HIGH corrigível mais antiga ainda pendente, com base na data de publicação.
+            Extraído de $.trivy.oldest_fixable_crit_high_days. Mede o atraso acumulado na aplicação de correções.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.trivy.oldest_fixable_crit_high_days
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: cve
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d419
+          name: 'Vuln: achados em kernels antigos instalados'
+          type: DEPENDENT
+          key: vuln.trivy.stale_kernel
+          history: 90d
+          value_type: UNSIGNED
+          description: |
+            Quantidade de achados do trivy referentes a versões de kernel instaladas mas não em execução no momento da coleta.
+            O script descarta esses achados do ranking e das contagens principais. Extraído de $.trivy.stale_kernel_findings.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.trivy.stale_kernel_findings
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: kernel
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d420
+          name: 'Vuln: advisories de segurança Critical pendentes'
+          type: DEPENDENT
+          key: 'vuln.pkg.advisories[Critical]'
+          history: 90d
+          value_type: FLOAT
+          valuemap:
+            name: 'Métrica não suportada em apt'
+          description: |
+            Quantidade de advisories de segurança Critical pendentes, segundo o repositório oficial da distribuição.
+            Extraído de $.pkgmgr.advisories.Critical. -1 significa que o host usa apt e este dado não está disponível.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.pkgmgr.advisories.Critical
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '-1'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: so
+          triggers:
+            - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d435
+              expression: 'last(/Linux vulnerabilidades by Zabbix agent active/vuln.pkg.advisories[Critical])>0'
+              name: 'Vuln: advisory de segurança Critical pendente'
+              opdata: 'Quantidade: {ITEM.LASTVALUE1}'
+              priority: HIGH
+              description: |
+                Dispara quando existe advisory de segurança Critical pendente no gerenciador de pacotes nativo.
+                Complementa a leitura do trivy com a base oficial do fornecedor da distribuição.
+              tags:
+                - tag: scope
+                  value: security
+                - tag: component
+                  value: so
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d421
+          name: 'Vuln: advisories de segurança Important pendentes'
+          type: DEPENDENT
+          key: 'vuln.pkg.advisories[Important]'
+          history: 90d
+          value_type: FLOAT
+          valuemap:
+            name: 'Métrica não suportada em apt'
+          description: |
+            Quantidade de advisories de segurança Important pendentes, extraído de $.pkgmgr.advisories.Important.
+            -1 significa que o host usa apt e este dado não está disponível.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.pkgmgr.advisories.Important
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '-1'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: so
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d422
+          name: 'Vuln: total de advisories de segurança pendentes'
+          type: DEPENDENT
+          key: vuln.pkg.advisories.total
+          history: 90d
+          value_type: FLOAT
+          valuemap:
+            name: 'Métrica não suportada em apt'
+          description: |
+            Total de advisories de segurança pendentes de todas as severidades, extraído de $.pkgmgr.advisories_total.
+            -1 significa que o host usa apt e este dado não está disponível.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.pkgmgr.advisories_total
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '-1'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: so
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d423
+          name: 'Vuln: CVEs com patch disponível no repositório'
+          type: DEPENDENT
+          key: vuln.pkg.cves_pending
+          history: 90d
+          value_type: FLOAT
+          valuemap:
+            name: 'Métrica não suportada em apt'
+          description: |
+            Quantidade de CVEs com patch disponível no repositório oficial da distribuição, extraído de $.pkgmgr.cves_pending.
+            -1 significa que o host usa apt e este dado não está disponível.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.pkgmgr.cves_pending
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '-1'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: so
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d424
+          name: 'Vuln: reboot pendente'
+          type: DEPENDENT
+          key: vuln.pkg.reboot_required
+          history: 90d
+          value_type: FLOAT
+          valuemap:
+            name: 'Reboot pendente'
+          description: |
+            Indica se o servidor precisa de reboot para aplicar atualizações já instaladas. Extraído de $.pkgmgr.reboot_required.
+            O valor -1 significa que a ferramenta needs-restarting não está instalada no host.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.pkgmgr.reboot_required
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: so
+          triggers:
+            - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d436
+              expression: 'min(/Linux vulnerabilidades by Zabbix agent active/vuln.pkg.reboot_required,{$VULN.REBOOT.MAX})=1'
+              name: 'Vuln: reboot pendente há mais de {$VULN.REBOOT.MAX}'
+              priority: WARNING
+              description: |
+                Dispara quando o reboot pendente persiste além do tempo definido na macro VULN.REBOOT.MAX.
+                Ajuda a identificar servidores esquecidos após uma janela de manutenção.
+              tags:
+                - tag: scope
+                  value: configuration
+                - tag: component
+                  value: so
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d425
+          name: 'Vuln: dias desde a última instalação de pacote'
+          type: DEPENDENT
+          key: vuln.pkg.last_patch_days
+          history: 90d
+          value_type: UNSIGNED
+          description: |
+            Dias desde a instalação do RPM ou pacote DEB mais recente no servidor, extraído de $.pkgmgr.last_patch_days.
+            Reflete a última instalação de qualquer pacote, não apenas de patches de segurança.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.pkgmgr.last_patch_days
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: so
+          triggers:
+            - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d437
+              expression: 'last(/Linux vulnerabilidades by Zabbix agent active/vuln.pkg.last_patch_days)>{$VULN.PATCH.MAX.DAYS}'
+              name: 'Vuln: sem atualização de pacotes há mais de {$VULN.PATCH.MAX.DAYS} dias'
+              opdata: 'Dias: {ITEM.LASTVALUE1}'
+              priority: INFO
+              description: |
+                Dispara quando nenhum pacote foi instalado no servidor dentro do período definido pela macro VULN.PATCH.MAX.DAYS.
+                Prioridade informativa, útil para identificar servidores fora do ciclo normal de patch.
+              tags:
+                - tag: scope
+                  value: configuration
+                - tag: component
+                  value: so
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d426
+          name: 'Vuln: ranking de pacotes'
+          type: DEPENDENT
+          key: vuln.rank.packages
+          history: 7d
+          value_type: TEXT
+          description: |
+            Lista em JSON dos pacotes com mais vulnerabilidades, ordenada por quantidade de CRITICAL, depois HIGH, depois total.
+            Extraído de $.trivy.top_packages, limitado a 15 itens. Consumido pelo Grafana em painel de ranking.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.trivy.top_packages
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1d
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: ranking
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d427
+          name: 'Vuln: ranking de CVEs'
+          type: DEPENDENT
+          key: vuln.rank.cves
+          history: 7d
+          value_type: TEXT
+          description: |
+            Lista em JSON das CVEs de maior severidade e maior CVSS, com pacote afetado, classe e indicação de correção disponível.
+            Extraído de $.trivy.top_cves, limitado a 15 itens. Consumido pelo Grafana em tabela de ranking.
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.trivy.top_cves
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1d
+          master_item:
+            key: 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]'
+          tags:
+            - tag: template
+              value: linux-vulnerabilidades
+            - tag: component
+              value: ranking
+      tags:
+        - tag: scope
+          value: security
+        - tag: target
+          value: linux
+      macros:
+        - macro: '{$VULN.LANG.CRIT.MAX}'
+          value: '0'
+          description: 'Limite de CVEs CRITICAL corrigíveis em aplicações a partir do qual a trigger dispara.'
+        - macro: '{$VULN.OS.CRIT.MAX}'
+          value: '0'
+          description: 'Limite de CVEs CRITICAL corrigíveis em pacotes do SO a partir do qual a trigger dispara.'
+        - macro: '{$VULN.OS.HIGH.MAX}'
+          value: '0'
+          description: 'Limite de CVEs HIGH corrigíveis em pacotes do SO a partir do qual a trigger dispara.'
+        - macro: '{$VULN.PATCH.MAX.DAYS}'
+          value: '60'
+          description: 'Dias sem instalação de pacote antes de disparar o alerta informativo.'
+        - macro: '{$VULN.REBOOT.MAX}'
+          value: 7d
+          description: 'Tempo máximo que um reboot pode ficar pendente antes de disparar o alerta.'
+        - macro: '{$VULN.SCAN.MAX.AGE}'
+          value: 36h
+          description: 'Idade máxima do relatório antes de considerar a coleta desatualizada.'
+      dashboards:
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d450
+          name: 'Vulnerabilidades - visão geral'
+          pages:
+            - name: 'Situação atual'
+              widgets:
+                - type: problems
+                  name: 'Alertas de vulnerabilidade em aberto'
+                  x: '0'
+                  'y': '0'
+                  width: '72'
+                  height: '4'
+                  fields:
+                    - type: STRING
+                      name: reference
+                      value: VULNA
+                    - type: INTEGER
+                      name: show_tags
+                      value: '2'
+                    - type: STRING
+                      name: tags.0.tag
+                      value: scope
+                    - type: INTEGER
+                      name: tags.0.operator
+                      value: '0'
+                    - type: STRING
+                      name: tags.0.value
+                      value: security
+                - type: svggraph
+                  name: 'CVEs corrigíveis por severidade'
+                  x: '0'
+                  'y': '4'
+                  width: '36'
+                  height: '6'
+                  fields:
+                    - type: STRING
+                      name: reference
+                      value: VULNB
+                    - type: STRING
+                      name: ds.0.items.0
+                      value: 'Vuln: CVEs corrigíveis CRITICAL'
+                    - type: STRING
+                      name: ds.0.color
+                      value: CC0000
+                    - type: STRING
+                      name: ds.1.items.0
+                      value: 'Vuln: CVEs corrigíveis HIGH'
+                    - type: STRING
+                      name: ds.1.color
+                      value: FF6600
+                    - type: STRING
+                      name: ds.2.items.0
+                      value: 'Vuln: CVEs corrigíveis MEDIUM'
+                    - type: STRING
+                      name: ds.2.color
+                      value: FFCC00
+                    - type: STRING
+                      name: ds.3.items.0
+                      value: 'Vuln: CVEs corrigíveis LOW'
+                    - type: STRING
+                      name: ds.3.color
+                      value: '339933'
+                - type: svggraph
+                  name: 'CVEs corrigíveis: SO vs aplicações'
+                  x: '36'
+                  'y': '4'
+                  width: '36'
+                  height: '6'
+                  fields:
+                    - type: STRING
+                      name: reference
+                      value: VULNC
+                    - type: STRING
+                      name: ds.0.items.0
+                      value: 'Vuln: CVEs corrigíveis CRITICAL em pacotes do SO'
+                    - type: STRING
+                      name: ds.0.color
+                      value: CC0000
+                    - type: STRING
+                      name: ds.1.items.0
+                      value: 'Vuln: CVEs corrigíveis HIGH em pacotes do SO'
+                    - type: STRING
+                      name: ds.1.color
+                      value: FF6600
+                    - type: STRING
+                      name: ds.2.items.0
+                      value: 'Vuln: CVEs corrigíveis CRITICAL em aplicações'
+                    - type: STRING
+                      name: ds.2.color
+                      value: '990099'
+                    - type: STRING
+                      name: ds.3.items.0
+                      value: 'Vuln: CVEs corrigíveis HIGH em aplicações'
+                    - type: STRING
+                      name: ds.3.color
+                      value: 3366FF
+      valuemaps:
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d428
+          name: 'Reboot pendente'
+          mappings:
+            - value: '-1'
+              newvalue: 'N/D'
+            - value: '0'
+              newvalue: 'Não'
+            - value: '1'
+              newvalue: 'Sim'
+        - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d429
+          name: 'Métrica não suportada em apt'
+          mappings:
+            - value: '-1'
+              newvalue: 'N/D (apt)'
+  graphs:
+    - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d440
+      name: 'Vuln: CVEs corrigíveis por severidade'
+      graph_items:
+        - color: CC0000
+          item:
+            host: 'Linux vulnerabilidades by Zabbix agent active'
+            key: 'vuln.trivy.fixable[CRITICAL]'
+        - sortorder: '1'
+          color: FF6600
+          item:
+            host: 'Linux vulnerabilidades by Zabbix agent active'
+            key: 'vuln.trivy.fixable[HIGH]'
+        - sortorder: '2'
+          color: FFCC00
+          item:
+            host: 'Linux vulnerabilidades by Zabbix agent active'
+            key: 'vuln.trivy.fixable[MEDIUM]'
+        - sortorder: '3'
+          color: '339933'
+          item:
+            host: 'Linux vulnerabilidades by Zabbix agent active'
+            key: 'vuln.trivy.fixable[LOW]'
+    - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d441
+      name: 'Vuln: CVEs corrigíveis por classe (CRITICAL e HIGH)'
+      graph_items:
+        - color: CC0000
+          item:
+            host: 'Linux vulnerabilidades by Zabbix agent active'
+            key: 'vuln.trivy.fixable.os[CRITICAL]'
+        - sortorder: '1'
+          color: FF6600
+          item:
+            host: 'Linux vulnerabilidades by Zabbix agent active'
+            key: 'vuln.trivy.fixable.os[HIGH]'
+        - sortorder: '2'
+          color: '990099'
+          item:
+            host: 'Linux vulnerabilidades by Zabbix agent active'
+            key: 'vuln.trivy.fixable.lang[CRITICAL]'
+        - sortorder: '3'
+          color: 3366FF
+          item:
+            host: 'Linux vulnerabilidades by Zabbix agent active'
+            key: 'vuln.trivy.fixable.lang[HIGH]'
+    - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d442
+      name: 'Vuln: CVEs únicas vs corrigíveis (CRITICAL e HIGH)'
+      graph_items:
+        - color: FF9999
+          item:
+            host: 'Linux vulnerabilidades by Zabbix agent active'
+            key: 'vuln.trivy.cves[CRITICAL]'
+        - sortorder: '1'
+          color: CC0000
+          item:
+            host: 'Linux vulnerabilidades by Zabbix agent active'
+            key: 'vuln.trivy.fixable[CRITICAL]'
+        - sortorder: '2'
+          color: FFCC99
+          item:
+            host: 'Linux vulnerabilidades by Zabbix agent active'
+            key: 'vuln.trivy.cves[HIGH]'
+        - sortorder: '3'
+          color: FF6600
+          item:
+            host: 'Linux vulnerabilidades by Zabbix agent active'
+            key: 'vuln.trivy.fixable[HIGH]'
+    - uuid: 5d8e2b7f91c44e6ab2f07a3c9e11d443
+      name: 'Vuln: duração da coleta'
+      graph_items:
+        - color: 3366FF
+          item:
+            host: 'Linux vulnerabilidades by Zabbix agent active'
+            key: vuln.scan.duration

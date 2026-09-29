@@ -1,0 +1,17 @@
+# Diretorios adicionais que o trivy deve ignorar neste host.
+# Uma linha por diretorio. Linhas vazias e iniciadas por # sao ignoradas.
+# Copie este arquivo para /etc/zabbix-vuln/extra-skip-dirs e ajuste.
+#
+# Ja ignorados pelo script em qualquer host (nao repita aqui)
+#   /proc /sys /dev /run /tmp /var/tmp
+#   /var/lib/docker /var/lib/containers /mnt /media
+#
+# Exemplo para hypervisor Proxmox VE
+#   Armazenamento de ISOs, templates e backups (nao contem pacotes de sistema)
+#/var/lib/vz
+#   Ponto de montagem de disco de VMs e backups
+#/nvme
+#
+# Exemplo para servidor com volume grande de dados de aplicacao
+#/var/lib/postgresql
+#/srv/dados

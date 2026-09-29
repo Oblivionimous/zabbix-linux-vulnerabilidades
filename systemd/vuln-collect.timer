@@ -1,0 +1,10 @@
+[Unit]
+Description=Agendamento diario da coleta de vulnerabilidades
+
+[Timer]
+OnCalendar=*-*-* 02:00:00
+RandomizedDelaySec=3h
+Persistent=true
+
+[Install]
+WantedBy=timers.target

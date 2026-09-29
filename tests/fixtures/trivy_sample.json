@@ -1,0 +1,141 @@
+{
+  "Results": [
+    {
+      "Target": "rocky 9.8",
+      "Class": "os-pkgs",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2025-1001",
+          "PkgName": "openssl",
+          "InstalledVersion": "3.0.7-1",
+          "Severity": "CRITICAL",
+          "PublishedDate": "2025-01-10T00:00:00Z",
+          "FixedVersion": "3.0.7-2",
+          "CVSS": {
+            "nvd": {
+              "V3Score": 9.8
+            }
+          }
+        },
+        {
+          "VulnerabilityID": "CVE-2025-1001",
+          "PkgName": "openssl-libs",
+          "InstalledVersion": "3.0.7-1",
+          "Severity": "CRITICAL",
+          "PublishedDate": "2025-01-10T00:00:00Z",
+          "FixedVersion": "3.0.7-2",
+          "CVSS": {
+            "nvd": {
+              "V3Score": 9.8
+            }
+          }
+        },
+        {
+          "VulnerabilityID": "CVE-2025-1002",
+          "PkgName": "libxml2",
+          "InstalledVersion": "2.9.13-1",
+          "Severity": "HIGH",
+          "PublishedDate": "2024-03-01T00:00:00Z",
+          "CVSS": {
+            "nvd": {
+              "V3Score": 7.5
+            }
+          }
+        },
+        {
+          "VulnerabilityID": "CVE-2025-1003",
+          "PkgName": "curl",
+          "InstalledVersion": "7.76.1-1",
+          "Severity": "MEDIUM",
+          "PublishedDate": "2024-03-01T00:00:00Z",
+          "FixedVersion": "7.76.1-2",
+          "CVSS": {
+            "nvd": {
+              "V3Score": 5.3
+            }
+          }
+        },
+        {
+          "VulnerabilityID": "CVE-2025-1004",
+          "PkgName": "kernel-core",
+          "InstalledVersion": "5.14.0-687.52.1.el9_8",
+          "Severity": "HIGH",
+          "PublishedDate": "2024-03-01T00:00:00Z",
+          "CVSS": {
+            "nvd": {
+              "V3Score": 7.8
+            }
+          }
+        },
+        {
+          "VulnerabilityID": "CVE-2025-1005",
+          "PkgName": "kernel-core",
+          "InstalledVersion": "5.14.0-570.25.1.el9_6",
+          "Severity": "HIGH",
+          "PublishedDate": "2024-03-01T00:00:00Z",
+          "CVSS": {
+            "nvd": {
+              "V3Score": 7.8
+            }
+          }
+        },
+        {
+          "VulnerabilityID": "CVE-2025-1005",
+          "PkgName": "kernel-modules",
+          "InstalledVersion": "5.14.0-570.25.1.el9_6",
+          "Severity": "HIGH",
+          "PublishedDate": "2024-03-01T00:00:00Z",
+          "CVSS": {
+            "nvd": {
+              "V3Score": 7.8
+            }
+          }
+        },
+        {
+          "VulnerabilityID": "CVE-2025-1006",
+          "PkgName": "kernel",
+          "InstalledVersion": "5.14.0-570.25.1.el9_6",
+          "Severity": "CRITICAL",
+          "PublishedDate": "2024-03-01T00:00:00Z",
+          "FixedVersion": "x",
+          "CVSS": {
+            "nvd": {
+              "V3Score": 9.0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "Target": "usr/bin/app",
+      "Class": "lang-pkgs",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2025-2001",
+          "PkgName": "golang.org/x/net",
+          "InstalledVersion": "0.10.0",
+          "Severity": "HIGH",
+          "PublishedDate": "2024-06-01T00:00:00Z",
+          "FixedVersion": "0.17.0",
+          "CVSS": {
+            "nvd": {
+              "V3Score": 7.5
+            }
+          }
+        },
+        {
+          "VulnerabilityID": "CVE-2025-2002",
+          "PkgName": "stdlib",
+          "InstalledVersion": "1.21.0",
+          "Severity": "LOW",
+          "PublishedDate": "2024-03-01T00:00:00Z",
+          "CVSS": {
+            "nvd": {
+              "V3Score": 3.1
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

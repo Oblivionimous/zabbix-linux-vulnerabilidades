@@ -1,0 +1,177 @@
+{
+  "timestamp": 1790620000,
+  "hostname": "host-exemplo",
+  "pkgmgr": {
+    "status": "ok",
+    "tool": "dnf",
+    "advisories": {
+      "Critical": 1,
+      "Important": 2,
+      "Moderate": 0,
+      "Low": 0
+    },
+    "advisories_total": 3,
+    "cves_pending": 4,
+    "packages_pending": 3,
+    "reboot_required": 0,
+    "last_patch_days": 12
+  },
+  "trivy": {
+    "status": "ok",
+    "running_kernel": "5.14.0-687.52.1.el9_8.x86_64",
+    "stale_kernel_findings": 3,
+    "unique_cves": {
+      "CRITICAL": 1,
+      "HIGH": 3,
+      "MEDIUM": 1,
+      "LOW": 1,
+      "UNKNOWN": 0
+    },
+    "fixable": {
+      "CRITICAL": 1,
+      "HIGH": 1,
+      "MEDIUM": 1,
+      "LOW": 0,
+      "UNKNOWN": 0
+    },
+    "fixable_by_class": {
+      "os-pkgs": {
+        "CRITICAL": 1,
+        "HIGH": 0,
+        "MEDIUM": 1,
+        "LOW": 0,
+        "UNKNOWN": 0
+      },
+      "lang-pkgs": {
+        "CRITICAL": 0,
+        "HIGH": 1,
+        "MEDIUM": 0,
+        "LOW": 0,
+        "UNKNOWN": 0
+      }
+    },
+    "unique_total": 6,
+    "findings_by_class": {
+      "os-pkgs": 5,
+      "lang-pkgs": 2
+    },
+    "oldest_fixable_crit_high_days": 850,
+    "top_packages": [
+      {
+        "package": "openssl",
+        "critical": 1,
+        "high": 0,
+        "medium": 0,
+        "low": 0,
+        "unknown": 0,
+        "total": 1
+      },
+      {
+        "package": "openssl-libs",
+        "critical": 1,
+        "high": 0,
+        "medium": 0,
+        "low": 0,
+        "unknown": 0,
+        "total": 1
+      },
+      {
+        "package": "libxml2",
+        "critical": 0,
+        "high": 1,
+        "medium": 0,
+        "low": 0,
+        "unknown": 0,
+        "total": 1
+      },
+      {
+        "package": "kernel-core",
+        "critical": 0,
+        "high": 1,
+        "medium": 0,
+        "low": 0,
+        "unknown": 0,
+        "total": 1
+      },
+      {
+        "package": "golang.org/x/net",
+        "critical": 0,
+        "high": 1,
+        "medium": 0,
+        "low": 0,
+        "unknown": 0,
+        "total": 1
+      },
+      {
+        "package": "curl",
+        "critical": 0,
+        "high": 0,
+        "medium": 1,
+        "low": 0,
+        "unknown": 0,
+        "total": 1
+      },
+      {
+        "package": "stdlib",
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 1,
+        "unknown": 0,
+        "total": 1
+      }
+    ],
+    "top_cves": [
+      {
+        "cve": "CVE-2025-1001",
+        "severity": "CRITICAL",
+        "score": 9.8,
+        "fixable": true,
+        "class": "os-pkgs",
+        "packages": "openssl,openssl-libs"
+      },
+      {
+        "cve": "CVE-2025-1004",
+        "severity": "HIGH",
+        "score": 7.8,
+        "fixable": false,
+        "class": "os-pkgs",
+        "packages": "kernel-core"
+      },
+      {
+        "cve": "CVE-2025-1002",
+        "severity": "HIGH",
+        "score": 7.5,
+        "fixable": false,
+        "class": "os-pkgs",
+        "packages": "libxml2"
+      },
+      {
+        "cve": "CVE-2025-2001",
+        "severity": "HIGH",
+        "score": 7.5,
+        "fixable": true,
+        "class": "lang-pkgs",
+        "packages": "golang.org/x/net"
+      },
+      {
+        "cve": "CVE-2025-1003",
+        "severity": "MEDIUM",
+        "score": 5.3,
+        "fixable": true,
+        "class": "os-pkgs",
+        "packages": "curl"
+      },
+      {
+        "cve": "CVE-2025-2002",
+        "severity": "LOW",
+        "score": 3.1,
+        "fixable": false,
+        "class": "lang-pkgs",
+        "packages": "stdlib"
+      }
+    ]
+  },
+  "duration": 21,
+  "status": "ok"
+}
