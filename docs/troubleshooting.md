@@ -1,16 +1,5 @@
 # Solução de problemas
 
-## Importação do template
-
-| Mensagem | Causa | Correção |
-|---|---|---|
-| `Tag inválida ... tag inesperada "graphs"` | A chave `graphs` está dentro do objeto do template | Em `zabbix_export`, `graphs` fica no nível raiz, ao lado de `templates` |
-| `... /widgets/widget(1)/x: um texto é esperado` | Número sem aspas no YAML | Todo valor escalar deve ser texto, por exemplo `x: '0'` e `width: '72'` |
-| Erro de estrutura sem detalhe claro | Chaves do template fora da ordem do esquema | A ordem é uuid, template, name, description, vendor, groups, items, tags, macros, dashboards, valuemaps |
-| Comportamento estranho em edição | Arquivo com CRLF misturado a LF | Converter para LF. O `.gitattributes` do repositório força LF |
-
-Rode `python3 tests/validate_template.py` antes de importar. Ele detecta esses casos.
-
 ## Dados não chegam ao Zabbix
 
 | Sintoma | Causa provável | Verificação |
