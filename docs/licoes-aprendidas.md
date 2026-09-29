@@ -25,16 +25,6 @@ Cada linha descreve um problema real encontrado durante a construção e o que f
 | CVE corrigível ausente do ranking | `top_cves` guarda só 15 entradas ordenadas por severidade | Contadores numéricos completos e melhoria prevista no roadmap |
 | Itens não suportados em hosts apt | Os campos de avisos não existem no JSON | Fallback -1 com value map `N/D (apt)` |
 
-## Template Zabbix
-
-| Problema | Causa | Solução |
-|---|---|---|
-| Importação recusada por `graphs` | Gráficos aninhados dentro do template | `graphs` no nível raiz de `zabbix_export` |
-| Importação recusada por valor `um texto é esperado` | Números sem aspas no YAML de widgets e cores | Todo escalar entre aspas |
-| Dashboard fora de ordem | Chaves do template fora da sequência do esquema | Ordem fixa validada por `tests/validate_template.py` |
-| Arquivo instável | CRLF misturado a LF depois de edições | Normalização para LF e `.gitattributes` |
-| Widget de gráfico sem referência | Campo `reference` obrigatório e único | Referências únicas por widget |
-
 ## Agente e cadastro
 
 | Problema | Causa | Solução |
