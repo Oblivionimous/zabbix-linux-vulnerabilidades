@@ -95,6 +95,8 @@ Os textos completos e as expressões estão em [referencia-template.md](referenc
 
 As triggers de CVE usam somente CVEs corrigíveis. Um host com muitas CVEs sem patch não gera alerta, porque não existe ação possível.
 
+<img width="1069" height="195" alt="image" src="https://github.com/user-attachments/assets/32c99870-85cb-47d1-b077-e4bb2908039b" />
+
 ## Dashboard do host
 
 O template inclui o dashboard "Vulnerabilidades - visão geral". Ele aparece em Monitoring > Hosts, coluna Dashboards. Mostra os problemas abertos com a tag `scope: security` e dois gráficos de CVEs corrigíveis.
