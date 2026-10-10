@@ -2,7 +2,7 @@
 
 O **Dashboard de Vulnerabilidades - Visão Geral** reúne os indicadores dos hosts Linux em um painel Business Text. Ele usa os itens do [template Zabbix](zabbix.md), com filtros por host, CVE e pacote.
 
-Importe [grafana/dashboard_linux_vulnerabilidades.v2.json](../grafana/dashboard_linux_vulnerabilidades.v2.json). O JSON contém consultas, JavaScript, CSS e layout. Não é necessário montar cada tabela manualmente.
+Use [grafana/dashboard_linux_vulnerabilidades.classic.json](../grafana/dashboard_linux_vulnerabilidades.classic.json) para compartilhar no catálogo da comunidade e importar com seleção da fonte Zabbix. A versão [V2 Resource](../grafana/dashboard_linux_vulnerabilidades.v2.json) também está disponível. Os dois arquivos contêm consultas, JavaScript, CSS e layout.
 
 A [galeria da integração](galeria.md) reúne a prévia do painel, exemplos de telas Zabbix e o fluxo de coleta. Todas as prévias têm a origem identificada.
 
@@ -20,7 +20,7 @@ Esses dados identificam o ambiente de origem. Não comprovam compatibilidade com
 
 Use uma instância Grafana que aceite V2 Resource e o Business Text 6.3.0 para reproduzir o export. Confira os requisitos do plugin Zabbix escolhido no [catálogo oficial](https://grafana.com/grafana/plugins/alexanderzobnin-zabbix-app/).
 
-Para uma instância que exija Classic, reexporte o dashboard pelo Grafana com esse modelo. Remover `apiVersion` ou renomear `spec` não converte o V2. Veja a [documentação dos modelos JSON](https://grafana.com/docs/grafana/latest/visualizations/dashboards/build-dashboards/view-dashboard-json-model/).
+O arquivo Classic foi preparado a partir do painel e do layout V2, com `schemaVersion: 42` do Grafana 13. Preserva as consultas e o código do Business Text e adiciona `__inputs` para selecionar a fonte Zabbix na importação. Essa preparação não equivale a uma importação testada em uma instância Grafana. Veja a [documentação dos modelos JSON](https://grafana.com/docs/grafana/latest/visualizations/dashboards/build-dashboards/view-dashboard-json-model/).
 
 ## Recursos do painel
 
@@ -45,6 +45,18 @@ O plugin instalado usa o ID `alexanderzobnin-zabbix-app`. As consultas usam `ale
 
 ## Importar o dashboard
 
+### Classic: compartilhamento e seleção da fonte
+
+1. Baixe o arquivo `grafana/dashboard_linux_vulnerabilidades.classic.json` pelo botão **Download raw file** no GitHub.
+2. Em **Dashboards > New > Import dashboard**, envie o JSON.
+3. Selecione a fonte Zabbix no campo **Zabbix** apresentado durante a importação.
+4. Escolha a pasta, confirme **Import** e confira as consultas A e B.
+5. Valide os valores conforme a seção [Validação na instância de destino](#validação-na-instância-de-destino).
+
+O arquivo não inclui UID de dashboard nem UID de fonte da instância de origem. As referências `${DS_ZABBIX}` são resolvidas pela seleção durante a importação.
+
+### V2 Resource: configuração do UID
+
 1. Faça uma cópia de `grafana/dashboard_linux_vulnerabilidades.v2.json`.
 2. Substitua as duas ocorrências de `ZABBIX_DATASOURCE_UID` pelo UID da sua fonte Zabbix.
 3. Em **Dashboards > New > Import dashboard**, envie essa cópia.
@@ -56,6 +68,19 @@ O plugin instalado usa o ID `alexanderzobnin-zabbix-app`. As consultas usam `ale
 O nome de recurso é `linux-vulnerabilidades-visao-geral`. Confira conflitos antes de importar uma segunda cópia. Veja o [procedimento oficial de importação](https://grafana.com/docs/grafana/latest/visualizations/dashboards/build-dashboards/import-dashboards/).
 
 O JSON publicado remove identificadores de usuário, UID interno e metadados de revisão da origem. A fonte recebe um marcador explícito. Configure as credenciais somente no Grafana.
+
+## Publicar no catálogo da comunidade
+
+O catálogo de dashboards de grafana.com exige o modelo **Classic**. O arquivo V2 Resource serve para instâncias Grafana, mas não deve ser enviado ao catálogo. Veja o [procedimento oficial de publicação](https://grafana.com/docs/grafana/latest/visualizations/dashboards/share-dashboards-panels/#publish-a-community-dashboard).
+
+1. Use `grafana/dashboard_linux_vulnerabilidades.classic.json`.
+2. Acesse grafana.com com sua conta e abra **My dashboards > Upload dashboard**.
+3. Envie o JSON Classic e preencha o título, a descrição e os demais campos do formulário.
+4. Inclua o link deste repositório e informe as dependências: Business Text 6.3.0 e fonte Zabbix.
+5. Identifique a origem de qualquer imagem adicionada. A prévia Grafana deste repositório usa dados simulados.
+6. Confira o conteúdo e conclua em **Save and Publish**.
+
+Se preferir exportar diretamente de sua instância Grafana 13, abra **Export > Export as code > Advanced options**, selecione **Model: Classic** e habilite **Share dashboard with another instance** antes de baixar o arquivo. Valide a importação e as consultas antes de divulgar o dashboard como testado.
 
 ## Consultas e atualização
 
@@ -140,7 +165,7 @@ Os limites `36h`, `60 dias` e `90 dias` ficam no JavaScript. O painel não lê m
 
 ## Manutenção
 
-O JSON é o artefato importável. Estes arquivos reproduzem o conteúdo do painel para revisão no GitHub:
+Os JSONs Classic e V2 são os artefatos importáveis. Estes arquivos reproduzem o conteúdo do painel para revisão no GitHub:
 
 | Arquivo | Campo do Business Text |
 |---|---|
@@ -152,7 +177,7 @@ Mantenha **Render template = All data**, correspondente a `renderMode: "data"`. 
 
 **Before Content Rendering** fica vazio. O painel monta HTML em After Content Ready, sem helpers Handlebars. Veja o [contexto JavaScript do plugin](https://grafana.com/docs/plugins/marcusolsson-dynamictext-panel/latest/javascript-code/).
 
-Ao alterar JavaScript, CSS ou Content, atualize o campo correspondente no JSON. Preserve os nomes dos itens Zabbix, usados para identificar métricas.
+Ao alterar JavaScript, CSS ou Content, atualize o campo correspondente nos dois JSONs. No Classic, os campos ficam em `panels[0].options`. No V2, ficam em `spec.elements["panel-1"].spec.vizConfig.spec.options`. Preserve os nomes dos itens Zabbix, usados para identificar métricas.
 
 Os filtros ficam em `window.__vulnvz`. Múltiplas cópias do painel na mesma página podem compartilhar esse estado. Valide esse cenário antes de duplicar o painel.
 
@@ -179,7 +204,8 @@ Uma prévia com dados simulados verifica renderização e interação. Ela não 
 | Hosts não reconhecidos | Nome `host: Vuln: item` ou labels/campos equivalentes |
 | Ranking corrigível vazio | O ranking limitado pode não conter as corrigíveis dos contadores |
 | Exibição parcial | Versão do plugin, campo After Content Ready e console do navegador |
-| JSON V2 rejeitado | Instância compatível ou reexportação em Classic pelo Grafana |
+| JSON rejeitado no catálogo grafana.com | Enviar o arquivo Classic. O catálogo não aceita V2 Resource |
+| JSON V2 rejeitado na instância | Conferir a mensagem de erro, a versão e o UID da fonte. O Classic também está disponível |
 
 Não desative a sanitização global como primeiro ajuste. Confira execução e configuração do plugin antes de alterar controles globais.
 

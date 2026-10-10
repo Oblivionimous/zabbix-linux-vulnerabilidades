@@ -6,6 +6,7 @@ O formato segue o padrão Keep a Changelog e o versionamento segue SemVer.
 
 ### Adicionado
 
+- Dashboard Grafana Classic para publicação no catálogo da comunidade, com seleção da fonte Zabbix durante a importação.
 - Galeria com capturas de testes reais do dashboard Zabbix e Latest data no Zabbix 7.0.31, além de uma ilustração da verificação da coleta.
 - Diagrama SVG do fluxo entre Linux, Zabbix e Grafana.
 - Export Grafana V2 com marcador de UID da fonte Zabbix, sem metadados internos da instância de origem.
