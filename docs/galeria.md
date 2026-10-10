@@ -14,15 +14,13 @@ As imagens apresentam o dashboard Grafana, o template Zabbix e o fluxo de coleta
 
 ![Prévia local do dashboard Grafana com dados simulados, indicadores da frota, rankings e mapa de calor](assets/grafana-exemplo.png)
 
-O código do painel foi executado online para oshosts simulados. Consulte [grafana.md](grafana.md) para configurar a fonte de dados e importar o dashboard.
+O código do painel foi executado online para os hosts simulados. Consulte [grafana.md](grafana.md) para configurar a fonte de dados e importar o dashboard.
 
 ## Zabbix: dashboard do host
 
 <img width="2552" height="946" alt="image" src="https://github.com/user-attachments/assets/3eb7d27b-69ea-4859-9f10-bd486490fb43" />
 
 Os nomes e a disposição dos três widgets seguem [template_linux_vulnerabilidades.yaml](../zabbix/template_linux_vulnerabilidades.yaml): um widget de problemas com `scope: security` e dois gráficos.
-
-Os valores finais vêm de [report.example.json](../examples/report.example.json).
 
 Consulte [zabbix.md](zabbix.md) para importação, vínculo, macros e interpretação. A documentação oficial do Zabbix 7.0 descreve os widgets [Problems](https://www.zabbix.com/documentation/7.0/en/manual/web_interface/frontend_sections/dashboards/widgets/problems) e [Graph](https://www.zabbix.com/documentation/7.0/en/manual/web_interface/frontend_sections/dashboards/widgets/graph).
 
