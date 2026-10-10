@@ -1,108 +1,190 @@
-# Configuração no Zabbix
+# Template Linux vulnerabilidades no Zabbix
 
-## Agente
+O template **Linux vulnerabilidades by Zabbix agent active** lê o relatório do coletor e cria indicadores, triggers e um dashboard por host. Importe [zabbix/template_linux_vulnerabilidades.yaml](../zabbix/template_linux_vulnerabilidades.yaml), no formato Zabbix `7.0`.
 
-O item mestre é do tipo agente ativo e usa a chave `vfs.file.contents`, que existe no `zabbix-agent` e no `zabbix-agent2`. Três parâmetros do arquivo de configuração do agente precisam estar corretos.
+## Conteúdo
 
-| Parâmetro | Exigência |
+| Objeto | Quantidade |
 |---|---|
-| `ServerActive` | Endereço do servidor Zabbix que recebe os dados ativos |
-| `Hostname` | Idêntico, letra por letra, ao nome técnico do host cadastrado no frontend |
-| `Server` | Continua valendo para checks passivos e não interfere nesta solução |
+| Item mestre de agente ativo | 1 |
+| Itens dependentes | 24 |
+| Triggers | 8 |
+| Gráficos | 4 |
+| Dashboard de host | 1, com três widgets |
+| Macros | 6 |
+| Value maps | 2 |
 
-Os arquivos ficam em `/etc/zabbix/zabbix_agent2.conf` ou `/etc/zabbix/zabbix_agentd.conf`, conforme o agente.
+A [referência do template](referencia-template.md) apresenta chaves, JSONPaths, expressões, macros e widgets. Ela é gerada a partir do YAML versionado.
 
-### Cuidado com vários endereços em ServerActive
+## Pré-requisitos
 
-Endereços separados por vírgula em `ServerActive` são tratados como nós de um mesmo cluster de alta disponibilidade. Para enviar dados a dois servidores independentes, separe-os com ponto e vírgula.
+- Coletor instalado conforme [instalacao.md](instalacao.md), com relatório em `/var/lib/zabbix-vuln/report.json`.
+- Zabbix Server 7.0 e host habilitado. Outras versões precisam de validação de importação.
+- `zabbix-agent` ou `zabbix-agent2` com checks ativos e leitura do relatório.
+- Comunicação com o servidor ou proxy responsável, normalmente na porta TCP `10051`.
 
+O agente apenas lê o relatório. O timer systemd executa a varredura como root. Não é necessário criar UserParameter ou liberar execução privilegiada para `zabbix`.
+
+## Configurar o agente
+
+Confira `/etc/zabbix/zabbix_agentd.conf` ou `/etc/zabbix/zabbix_agent2.conf`, conforme o serviço instalado.
+
+| Parâmetro | Configuração |
+|---|---|
+| `ServerActive` | Servidor ou proxy que entrega os checks ativos deste host |
+| `Hostname` | Mesmo valor do campo técnico **Host name** no Zabbix |
+| `Server` | Lista permitida para checks passivos. Não configura o destino dos checks ativos |
+
+Exemplo com endereço reservado para documentação:
+
+```ini
+ServerActive=192.0.2.10:10051
+Hostname=host-exemplo
 ```
+
+Substitua os valores pelo destino e nome reais. Para hosts com proxy, configure o proxy responsável e confira **Monitored by** no frontend.
+
+### Mais de um destino
+
+No Zabbix 7.0, vírgulas separam instalações independentes. Pontos e vírgulas separam membros do mesmo cluster de alta disponibilidade ou grupo de proxies. Veja a [sintaxe oficial de ServerActive](https://www.zabbix.com/documentation/7.0/en/manual/appendix/config/zabbix_agentd#serveractive).
+
+```ini
+# Dois servidores independentes
+ServerActive=192.0.2.10,192.0.2.20
+
+# Membros do mesmo cluster de alta disponibilidade
 ServerActive=192.0.2.10;192.0.2.20
 ```
 
-Em um host que executa o Zabbix proxy, um `ServerActive` com o próprio endereço na primeira posição fez o agente tentar a porta 10051 local. O log registrou `Active check configuration update started to fail`. Aponte apenas para o servidor que monitora o host.
+Use a configuração da sua topologia. Não inclua o próprio host como destino se ele não entrega os checks ativos.
 
-Depois de alterar o arquivo, reinicie o agente.
+Após editar, reinicie somente o serviço instalado. Isso exige privilégios administrativos:
 
 ```bash
+# Agente clássico
 systemctl restart zabbix-agent
 ```
 
-Em hosts com agent2, use `zabbix-agent2`.
-
-### Permissão de leitura
-
-O agente roda como o usuário `zabbix` e precisa ler `/var/lib/zabbix-vuln/report.json`. O script cria o arquivo com permissão `0644` e o diretório com `0755`. Para testar sem `sudo`.
-
 ```bash
-runuser -u zabbix -- cat /var/lib/zabbix-vuln/report.json > /dev/null && echo "leitura OK"
+# Agent 2
+systemctl restart zabbix-agent2
 ```
 
-### Teste local da chave
+### Leitura do relatório
 
-Com o agent2, a chave pode ser testada direto no host.
+O coletor cria o diretório com `0755` e o arquivo com `0644`. Verifique a leitura como usuário `zabbix`:
+
+```bash
+runuser -u zabbix -- test -r /var/lib/zabbix-vuln/report.json && echo 'leitura OK'
+jq '{timestamp, status, duration, pkgmgr_status: .pkgmgr.status, trivy_status: .trivy.status}' \
+  /var/lib/zabbix-vuln/report.json
+```
+
+Com agent2, teste a chave localmente:
 
 ```bash
 runuser -u zabbix -- zabbix_agent2 -t 'vfs.file.contents[/var/lib/zabbix-vuln/report.json]' | cut -c1-200
 ```
 
-## Importar o template
+O teste local confirma leitura. Confira também a entrega dos checks ativos no frontend.
 
-1. Em Data collection > Templates, clique em Import.
-2. Selecione `zabbix/template_linux_vulnerabilidades.yaml`.
-3. Marque Create new e Update existing. Marque Delete missing somente se quiser remover itens antigos que não existem mais no arquivo.
-4. Clique em Import.
+## Importar
 
-O arquivo deve usar quebra de linha LF. O repositório força isso pelo `.gitattributes`. Se o importador reclamar de estrutura, veja [troubleshooting.md](troubleshooting.md).
+1. Em **Data collection > Templates > Import**, selecione o YAML versionado.
+2. Revise **Create new** e **Update existing** para os objetos desejados.
+3. Mantenha **Delete missing** desmarcado na primeira importação ou quando preservar objetos locais.
+4. Confira a prévia de alterações e confirme **Import**.
+5. Localize o template em **Templates/Security**.
 
-## Vincular a um host
+Antes de atualizar, exporte o template instalado. **Update existing** pode substituir personalizações. **Delete missing** pode remover objetos ausentes do arquivo. Revise as opções conforme o objetivo da atualização.
 
-1. Em Data collection > Hosts, abra o host. O campo Host name deve ser igual ao `Hostname` do agente.
-2. Em Templates, vincule `Linux vulnerabilidades by Zabbix agent active`.
-3. Confirme que o campo Monitored by aponta para o servidor ou proxy correto.
+Preserve UUIDs para identificar objetos entre versões. O YAML usa LF e valores escalares textuais, conforme o validador do projeto. Veja a [importação oficial de templates](https://www.zabbix.com/documentation/7.0/en/manual/xml_export_import/templates).
 
-Para muitos hosts, selecione-os na lista, escolha Mass update e use Link templates.
+## Vincular aos hosts
+
+1. Em **Data collection > Hosts**, abra o host.
+2. Confira **Host name**, status e **Monitored by**.
+3. Em **Templates**, vincule **Linux vulnerabilidades by Zabbix agent active**.
+4. Salve e aguarde a atualização dos checks ativos.
+
+Para vários hosts, use **Mass update > Link templates**. Preserve os demais vínculos.
 
 ## Validar
 
-Em Monitoring > Latest data, filtre pelo host e adicione o filtro de tag `template` igual a `linux-vulnerabilidades`. Todos os itens do template aparecem.
+Em **Monitoring > Latest data**, filtre pelo host e pela tag de item `template: linux-vulnerabilidades`.
 
 | Item | Resultado esperado |
 |---|---|
-| Vuln: status da coleta | `ok` |
-| Vuln: horário da última coleta | Data recente |
-| Vuln: relatório JSON | Sem valor. O item mestre não guarda histórico |
-| Itens de avisos em hosts com apt | `N/D (apt)` |
+| `Vuln: status da coleta` | `ok`, com os componentes do relatório também verificados |
+| `Vuln: horário da última coleta` | Data recente, comparada ao timestamp do arquivo |
+| `Vuln: duração da coleta` | Segundos |
+| `Vuln: relatório JSON` | Histórico desabilitado. Confira os valores pelos itens dependentes |
+| Advisories e CVEs nativas em hosts apt | `-1`, exibido como `N/D (apt)` |
+| Rankings de CVEs e pacotes | Listas JSON, possivelmente vazias quando não houver achados |
 
-O primeiro valor pode levar até 30 minutos, que é o intervalo do item mestre.
+O primeiro recebimento pode levar até `30m`. Esse intervalo do item mestre é diferente da coleta diária.
+
+Contadores e status descartam valores iguais com heartbeat de `6h`. Os rankings usam heartbeat de `1d`. Timestamp e duração são registrados a cada recebimento. A data no histórico pode ser anterior à última leitura do relatório.
+
+Zero em uma contagem não comprova sucesso. Confira `vuln.scan.status`, timestamp e `.pkgmgr.status` e `.trivy.status` do relatório. Veja [troubleshooting.md](troubleshooting.md) para ausência de dados.
 
 ## Macros
 
-Ajuste as macros no host ou em um grupo de hosts para adequar limites à criticidade do servidor.
+Configure limites na aba **Macros** do host ou template. Macros de host prevalecem sobre as herdadas. Grupos de hosts não definem macros. Para vários hosts, use atualização em massa ou um template apropriado. Veja as [macros de usuário do Zabbix](https://www.zabbix.com/documentation/7.0/en/manual/config/macros/user_macros).
 
-| Macro | Padrão | Efeito |
+| Macro | Padrão | Uso |
 |---|---|---|
-| `{$VULN.OS.CRIT.MAX}` | 0 | Limite de CVEs CRITICAL corrigíveis em pacotes do SO |
-| `{$VULN.OS.HIGH.MAX}` | 0 | Limite de CVEs HIGH corrigíveis em pacotes do SO |
-| `{$VULN.LANG.CRIT.MAX}` | 0 | Limite de CVEs CRITICAL corrigíveis em aplicações |
-| `{$VULN.PATCH.MAX.DAYS}` | 60 | Dias sem instalar pacote antes do alerta informativo |
-| `{$VULN.REBOOT.MAX}` | 7d | Tempo máximo com reboot pendente |
-| `{$VULN.SCAN.MAX.AGE}` | 36h | Idade máxima do relatório |
+| `{$VULN.OS.CRIT.MAX}` | `0` | Limite de Critical corrigíveis em pacotes do SO |
+| `{$VULN.OS.HIGH.MAX}` | `0` | Limite de High corrigíveis em pacotes do SO |
+| `{$VULN.LANG.CRIT.MAX}` | `0` | Limite de Critical corrigíveis em aplicações |
+| `{$VULN.PATCH.MAX.DAYS}` | `60` | Dias desde a instalação de pacote antes do alerta informativo |
+| `{$VULN.REBOOT.MAX}` | `7d` | Janela de `min()` para verificar reboot pendente |
+| `{$VULN.SCAN.MAX.AGE}` | `36h` | Idade máxima do relatório |
 
-## Triggers
+As expressões de CVE usam `>`, não `>=`. Com limite `0`, uma CVE corrigível supera o limite.
 
-Os textos completos e as expressões estão em [referencia-template.md](referencia-template.md). O que fazer quando cada uma dispara está em [operacao.md](operacao.md).
+## Triggers e ações
 
-As triggers de CVE usam somente CVEs corrigíveis. Um host com muitas CVEs sem patch não gera alerta, porque não existe ação possível.
+| Condição | Prioridade | Tag scope |
+|---|---|---|
+| Status diferente de `ok` | Atenção | `availability` |
+| Relatório acima de `{$VULN.SCAN.MAX.AGE}` | Atenção | `availability` |
+| Critical corrigível em SO acima do limite | Alta | `security` |
+| High corrigíveis em SO acima do limite | Média | `security` |
+| Critical corrigível em aplicações acima do limite | Média | `security` |
+| Advisory Critical pendente | Alta | `security` |
+| Reboot pendente em todas as amostras da janela | Atenção | `configuration` |
+| Dias desde instalação de pacote acima do limite | Informação | `configuration` |
 
-<img width="1069" height="195" alt="image" src="https://github.com/user-attachments/assets/32c99870-85cb-47d1-b077-e4bb2908039b" />
+A trigger de reboot usa `min(item, janela)=1`. Ela examina amostras existentes, sem armazenar a data inicial da pendência. Um host recém-vinculado pode ter histórico menor que sete dias. Considere esse limite ao interpretar o alerta.
 
-## Dashboard do host
+A trigger de relatório antigo calcula `now()-last(timestamp)`. Ela não substitui `nodata()` para um host que nunca enviou dados.
 
-O template inclui o dashboard "Vulnerabilidades - visão geral". Ele aparece em Monitoring > Hosts, coluna Dashboards. Mostra os problemas abertos com a tag `scope: security` e dois gráficos de CVEs corrigíveis.
+As triggers de CVE usam contadores corrigíveis. A de advisory usa a informação da distribuição. Ausência de versão corrigida no Trivy não significa ausência de risco ou mitigação.
 
-Este dashboard não usa cartões de valor único. Se quiser, adicione widgets do tipo Item value pela interface.
+O template não inclui ações. Configure-as em **Alerts > Actions > Trigger actions**. Uma condição `scope: security` cobre quatro triggers. Ela não cobre falhas de coleta ou pendências de configuração.
 
-## Notificação
+As expressões completas estão na [referência](referencia-template.md). Os procedimentos estão em [operacao.md](operacao.md).
 
-O template cria triggers, mas não cria ações. Para receber avisos, configure uma ação em Alerts > Actions com a condição de tag `scope` igual a `security`. Veja o [roadmap](roadmap.md).
+## Dashboard nativo do host
+
+Em **Monitoring > Hosts > Dashboards**, selecione **Vulnerabilidades - visão geral**. A página **Situação atual** contém:
+
+- Problemas abertos com `scope: security`.
+- Gráfico de corrigíveis por severidade.
+- Gráfico de corrigíveis Critical e High em SO e aplicações.
+
+O widget de problemas não mostra `availability` e `configuration`. Consulte a lista geral de problemas para acompanhar coleta e reboot.
+
+O template não inclui tabelas que decodifiquem rankings JSON. O [dashboard Grafana](grafana.md) mostra os rankings e consolida hosts. Ele é importado separadamente e é opcional para a coleta.
+
+## Limites de interpretação
+
+- Corrigível significa `FixedVersion` em pelo menos um achado agregado. Confira pacote e versão antes de planejar a atualização.
+- A idade da CVE usa a publicação, não a data do patch.
+- `last_patch_days` mede instalação de qualquer pacote.
+- Rankings têm até quinze entradas por host. Contadores não têm esse limite.
+- SO e aplicação podem conter a mesma CVE. Os conjuntos não são exclusivos.
+- `-1` indica dado indisponível. Não trate como quantidade negativa.
+
+Veja o relatório e a agregação em [arquitetura.md](arquitetura.md).

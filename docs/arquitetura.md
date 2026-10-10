@@ -26,7 +26,7 @@ O trivy enxerga pacotes do sistema e bibliotecas de linguagem (Go, Python, Node,
 
 ### Indicador principal é a CVE corrigível
 
-O trivy também relata CVEs que ainda não têm correção publicada. Essas não permitem nenhuma ação e inflam o total. Por isso as triggers usam a contagem de CVEs corrigíveis e não o total de CVEs únicas.
+O trivy também relata CVEs que ainda não têm correção publicada. A ausência de versão corrigida no relatório não significa ausência de risco ou de medidas de mitigação. As triggers de CVE usam corrigíveis para acompanhar pendências com correção informada pelo Trivy.
 
 ### Filtro de kernel antigo
 
@@ -83,7 +83,7 @@ Um exemplo completo está em [../examples/report.example.json](../examples/repor
 
 | Campo | Descrição |
 |---|---|
-| `timestamp` | Momento da coleta em segundos Unix |
+| `timestamp` | Início da coleta que gerou o relatório, em segundos Unix. Conferir também `status` |
 | `hostname` | Nome do host segundo o kernel |
 | `duration` | Duração da coleta em segundos |
 | `status` | `ok` ou `error`. Vale `error` se o gerenciador de pacotes ou o trivy falharem |
@@ -99,11 +99,11 @@ Um exemplo completo está em [../examples/report.example.json](../examples/repor
 | `trivy.running_kernel` | Resultado de `uname -r` |
 | `trivy.stale_kernel_findings` | Achados de kernels antigos descartados |
 | `trivy.unique_cves` | CVEs distintas por severidade |
-| `trivy.fixable` | CVEs distintas com correção publicada, por severidade |
-| `trivy.fixable_by_class` | O mesmo, separado em `os-pkgs` e `lang-pkgs` |
+| `trivy.fixable` | CVEs distintas com `FixedVersion` em pelo menos um achado, por severidade |
+| `trivy.fixable_by_class` | Corrigíveis em `os-pkgs` e `lang-pkgs`. Uma CVE pode pertencer a ambas as classes |
 | `trivy.unique_total` | Total de CVEs distintas |
 | `trivy.findings_by_class` | Achados brutos por classe, sem deduplicar |
-| `trivy.oldest_fixable_crit_high_days` | Idade em dias da CVE CRITICAL ou HIGH corrigível mais antiga |
+| `trivy.oldest_fixable_crit_high_days` | Dias desde a publicação da CVE CRITICAL ou HIGH corrigível mais antiga. Não mede a data do patch |
 | `trivy.top_packages` | Até 15 pacotes com mais vulnerabilidades |
 | `trivy.top_cves` | Até 15 CVEs de maior severidade e CVSS |
 
@@ -113,7 +113,7 @@ O script grava o arquivo em um temporário e o renomeia, então o agente nunca l
 
 Considere um host Debian que, depois de aplicar todas as atualizações, mostra 577 CVEs únicas e zero CVEs corrigíveis.
 
-As 577 CVEs existem e estão catalogadas. Nenhuma tem `FixedVersion` publicado, ou seja, nenhum fornecedor lançou o patch. Não há comando que resolva isso hoje. O que aumenta a segurança nesse caso é reduzir a superfície, removendo pacotes não usados, ou aceitar o risco de forma documentada.
+Nesse relatório, as 577 CVEs não têm `FixedVersion` informado. Isso não comprova ausência de correção em toda fonte possível. Confirme os avisos da distribuição e as versões afetadas antes de definir atualização, mitigação ou aceitação de risco.
 
 Três contagens diferentes aparecem no relatório.
 
@@ -124,6 +124,10 @@ Três contagens diferentes aparecem no relatório.
 | CVEs corrigíveis (`fixable`) | CVEs únicas que têm versão corrigida disponível |
 
 Uma mesma CVE que atinge `kernel`, `kernel-core` e `kernel-modules` gera três achados e uma CVE única.
+
+A marca de corrigível é agregada por CVE com uma operação lógica OU sobre `FixedVersion`. A correção em um achado não garante correção em todos os pacotes daquela CVE.
+
+No Grafana, os totais da frota somam os contadores por host. A mesma CVE em dois hosts conta duas vezes. O ranking agrupa identificadores, mas recebe somente as quinze entradas de cada host. Veja [grafana.md](grafana.md).
 
 ## Limitações conhecidas
 

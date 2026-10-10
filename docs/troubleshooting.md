@@ -37,7 +37,7 @@ Em agente clássico o log é `/var/log/zabbix/zabbix_agentd.log`.
 |---|---|
 | Milhares de achados em kernel | Kernels antigos instalados. O filtro os descarta. Se aparecerem no ranking, confira os prefixos de nome de pacote |
 | CVEs corrigíveis que o gerenciador não atualiza | Pacote órfão de versão anterior do sistema, veja [sistemas-operacionais.md](sistemas-operacionais.md) |
-| Muitas CVEs únicas e zero corrigíveis | Nenhum fornecedor publicou patch. Veja "Como interpretar os números" em [arquitetura.md](arquitetura.md) |
+| Muitas CVEs únicas e zero corrigíveis | O Trivy não informou `FixedVersion` nos achados. Confira também os avisos da distribuição, conforme [arquitetura.md](arquitetura.md) |
 | `-1` nos itens de avisos | Host com apt. O dado não existe nessa distribuição |
 | CVE corrigível fora do ranking | O ranking guarda só 15 CVEs. Os contadores numéricos não têm esse limite |
 

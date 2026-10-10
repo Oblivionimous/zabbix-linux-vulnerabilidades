@@ -28,6 +28,22 @@ out.append("Este arquivo é gerado por `tests/gerar_referencia.py` a partir de `
 out.append("## Identificação\n")
 out.append(f"| Campo | Valor |\n|---|---|\n| Nome | {esc(t['name'])} |\n| Fornecedor | {esc(t['vendor']['name'])} |\n| Versão | {esc(t['vendor']['version'])} |\n| Grupo | {esc(t['groups'][0]['name'])} |\n| Tags do template | " + ", ".join(f"`{x['tag']}: {x['value']}`" for x in t["tags"]) + " |\n")
 
+out.append("## Inventário\n")
+out.append("| Objeto | Quantidade |\n|---|---|")
+counts = [
+    ("Itens", len(t["items"])),
+    ("Itens dependentes", sum(i["type"] == "DEPENDENT" for i in t["items"])),
+    ("Triggers", sum(len(i.get("triggers", [])) for i in t["items"])),
+    ("Gráficos", len(zx.get("graphs", []))),
+    ("Dashboards", len(t.get("dashboards", []))),
+    ("Widgets", sum(len(p["widgets"]) for d in t.get("dashboards", []) for p in d["pages"])),
+    ("Macros", len(t.get("macros", []))),
+    ("Value maps", len(t.get("valuemaps", []))),
+]
+for label, count in counts:
+    out.append(f"| {label} | {count} |")
+out.append("")
+
 out.append("## Item mestre\n")
 m = t["items"][0]
 out.append(f"O item `{m['key']}` do tipo agente ativo lê o arquivo JSON a cada {m['delay']} e não guarda histórico. Todos os demais itens são dependentes dele e extraem campos por JSONPath.\n")
@@ -83,5 +99,5 @@ for v in t["valuemaps"]:
         out.append(f"| {mp['value']} | {esc(mp['newvalue'])} |")
     out.append("")
 
-open(DST, "w", encoding="utf-8").write("\n".join(out))
+open(DST, "w", encoding="utf-8", newline="\n").write("\n".join(out))
 print("gerado", DST)
