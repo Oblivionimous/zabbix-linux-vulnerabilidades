@@ -9,7 +9,7 @@ A coleta combina duas fontes. O gerenciador de pacotes nativo informa os avisos 
 - Script `src/vuln-collect.py` que gera um relatório JSON por host.
 - Units systemd que executam o script uma vez por dia com limites de CPU, memória e IO.
 - [Template Zabbix 7.0](zabbix/template_linux_vulnerabilidades.yaml) com 25 itens, 8 triggers, 4 gráficos e 1 dashboard por host.
-- [Dashboard Grafana V2](grafana/dashboard_linux_vulnerabilidades.v2.json) com indicadores da frota, filtros, rankings e mapa de calor em Business Text.
+- [Dashboard Grafana V2](grafana/dashboard_linux_vulnerabilidades.v2.json) com indicadores dos hosts, filtros, rankings e mapa de calor em Business Text.
 - Instalador, validador e desinstalador em `scripts/`.
 - Testes automatizados que conferem o template e a lógica de agregação.
 - Documentação da instalação em Rocky Linux, Debian, Ubuntu e Proxmox VE.
