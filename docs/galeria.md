@@ -32,7 +32,7 @@ Consulte [zabbix.md](zabbix.md) para importação, vínculo, macros e interpreta
 
 <img width="2541" height="950" alt="image" src="https://github.com/user-attachments/assets/79b7fe28-417f-4bef-89a5-daea5c1cbab2" />
 
-A imagem mostra uma seleção de quinze dos 24 itens dependentes. Os nomes vêm do template e os valores são extraídos pelos respectivos JSONPaths. O timestamp usa UTC. O value map de reboot converte `0` em `Não`.
+A imagem mostra uma seleção dos 25 itens dependentes. Os nomes vêm do template e os valores são extraídos pelos respectivos JSONPaths. O timestamp usa UTC. O value map de reboot converte `0` em `Não`.
 
 Os tempos de **Last check** são ilustrativos. O intervalo de leitura do item mestre é `30m`, mas itens com descarte de valores iguais podem ter um horário anterior no histórico. Consulte a [documentação oficial de Latest data](https://www.zabbix.com/documentation/7.0/en/manual/web_interface/frontend_sections/monitoring/latest_data) e o procedimento de [validação](zabbix.md#validar).
 
