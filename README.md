@@ -9,7 +9,7 @@ A coleta combina duas fontes. O gerenciador de pacotes nativo informa os avisos 
 - Script `src/vuln-collect.py` que gera um relatório JSON por host.
 - Units systemd que executam o script uma vez por dia com limites de CPU, memória e IO.
 - [Template Zabbix 7.0](zabbix/template_linux_vulnerabilidades.yaml) com 25 itens, 8 triggers, 4 gráficos e 1 dashboard por host.
-- [Dashboard Grafana V2](grafana/dashboard_linux_vulnerabilidades.v2.json) com indicadores dos hosts, filtros, rankings e mapa de calor em Business Text.
+- Dashboard Grafana em [Classic](grafana/dashboard_linux_vulnerabilidades.classic.json), para compartilhar no catálogo da comunidade, e [V2 Resource](grafana/dashboard_linux_vulnerabilidades.v2.json), com indicadores dos hosts, filtros, rankings e mapa de calor em Business Text.
 - Instalador, validador e desinstalador em `scripts/`.
 - Testes automatizados que conferem o template e a lógica de agregação.
 - Documentação da instalação em Rocky Linux, Debian, Ubuntu e Proxmox VE.
@@ -43,7 +43,7 @@ Os números de CVEs únicas e de CVEs corrigíveis medem coisas diferentes. Uma 
 | Ferramentas | `systemd`, `jq`, `curl`, `sha256sum`. Em RPM também `yum-utils` para `needs-restarting` |
 | Rede | Saída HTTPS para `github.com` (download do trivy) e para os registros de onde o trivy baixa a base de vulnerabilidades |
 | Zabbix | Template no formato 7.0 e agente ativo (zabbix-agent ou zabbix-agent2). Validar importação em outras versões |
-| Grafana, opcional | Instância compatível com V2 Resource, Business Text e fonte Zabbix. Veja [docs/grafana.md](docs/grafana.md) |
+| Grafana, opcional | Grafana 13, Business Text 6.3.0 e fonte Zabbix. Arquivos Classic e V2 Resource. Veja [docs/grafana.md](docs/grafana.md) |
 
 O template foi validado em Zabbix 7.0 com agente clássico 7.0.29 e com agent2.
 
@@ -60,7 +60,7 @@ RUN_NOW=1 ./scripts/install.sh
 
 No frontend do Zabbix, importe `zabbix/template_linux_vulnerabilidades.yaml` em Data collection > Templates > Import e vincule o template ao host. O passo a passo completo está em [docs/zabbix.md](docs/zabbix.md).
 
-Para o Grafana, importe `grafana/dashboard_linux_vulnerabilidades.v2.json` após substituir as duas ocorrências de `ZABBIX_DATASOURCE_UID` pelo UID da sua fonte. O export de origem registra Grafana 13.2.3 e Business Text 6.3.0. A versão do plugin Zabbix não está registrada. Confira a importação e as consultas no ambiente de destino conforme [docs/grafana.md](docs/grafana.md).
+Para o Grafana, importe `grafana/dashboard_linux_vulnerabilidades.classic.json` em **Dashboards > New > Import dashboard** e selecione sua fonte Zabbix. Este é também o arquivo para envio ao catálogo da comunidade em grafana.com. A versão V2 continua disponível e exige substituir `ZABBIX_DATASOURCE_UID` pelo UID da fonte nas duas consultas. O export de origem registra Grafana 13.2.3 e Business Text 6.3.0. Confira os formatos, os plugins e a publicação em [docs/grafana.md](docs/grafana.md).
 
 ## Prévias
 
@@ -116,6 +116,7 @@ zabbix-linux-vulnerabilidades/
 ├── zabbix/
 │   └── template_linux_vulnerabilidades.yaml
 ├── grafana/
+│   ├── dashboard_linux_vulnerabilidades.classic.json
 │   ├── dashboard_linux_vulnerabilidades.v2.json
 │   ├── business-text-after-render.js
 │   ├── business-text-styles.css
