@@ -113,7 +113,7 @@ Para vários hosts, use **Mass update > Link templates**. Preserve os demais ví
 
 Em **Monitoring > Latest data**, filtre pelo host e pela tag de item `template: linux-vulnerabilidades`.
 
-![Ilustração de Latest data com quinze itens dependentes e valores do relatório de exemplo](assets/zabbix-latest-data-exemplo.png)
+<img width="2556" height="958" alt="image" src="https://github.com/user-attachments/assets/4676d052-c26b-434b-ada3-f3012d765a4c" />
 
 Interface aproximada e tempos de check ilustrativos. Os nomes e valores seguem o template e o relatório de exemplo. A [galeria](galeria.md#zabbix-latest-data) descreve a origem dos dados.
 
