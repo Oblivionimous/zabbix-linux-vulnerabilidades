@@ -10,7 +10,7 @@ zabbix_export:
       description: |
         Lê o arquivo /var/lib/zabbix-vuln/report.json, gerado pelo script /usr/local/sbin/vuln-collect.py através do timer systemd vuln-collect.timer.
         Consolida vulnerabilidades do trivy e advisories nativos do gerenciador de pacotes, com itens numéricos para o Zabbix e listas em texto para o Grafana.
-        Suporta Rocky, RHEL, AlmaLinux e derivados via dnf ou yum, e Debian ou Ubuntu via apt. Os itens de advisories nativos ficam não suportados em hosts Debian ou Ubuntu.
+        Suporta Rocky, RHEL, AlmaLinux e derivados via dnf ou yum, e Debian ou Ubuntu via apt. Os itens nativos indisponíveis em apt recebem -1, exibido como N/D (apt) pelo value map.
       vendor:
         name: 'Mauro Paiva'
         version: '7.0'
@@ -76,7 +76,7 @@ zabbix_export:
           value_type: UNSIGNED
           units: unixtime
           description: |
-            Data e hora da última execução bem sucedida da coleta, extraída de $.timestamp em formato unixtime.
+            Data e hora de início da última coleta que gerou o relatório, extraída de $.timestamp em formato unixtime. Confira também o status da coleta.
           preprocessing:
             - type: JSONPATH
               parameters:
@@ -279,7 +279,7 @@ zabbix_export:
               priority: AVERAGE
               description: |
                 Dispara quando o número de CVEs HIGH corrigíveis em pacotes do SO ultrapassa a macro VULN.OS.HIGH.MAX.
-                Ajuste a macro por host, template ou grupo conforme a criticidade do servidor.
+                Ajuste a macro por host ou template conforme a criticidade do servidor.
               tags:
                 - tag: scope
                   value: security
@@ -420,7 +420,7 @@ zabbix_export:
           value_type: UNSIGNED
           description: |
             Idade em dias da CVE CRITICAL ou HIGH corrigível mais antiga ainda pendente, com base na data de publicação.
-            Extraído de $.trivy.oldest_fixable_crit_high_days. Mede o atraso acumulado na aplicação de correções.
+            Extraído de $.trivy.oldest_fixable_crit_high_days. Mede a idade desde a publicação da CVE, não desde a disponibilização do patch.
           preprocessing:
             - type: JSONPATH
               parameters:

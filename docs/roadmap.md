@@ -34,9 +34,13 @@ Um playbook que executa o instalador, copia `extra-skip-dirs` por grupo de hosts
 
 Usar os relatórios agendados do Zabbix para enviar semanalmente o dashboard de vulnerabilidades.
 
-### Gráfico de barras no Grafana
+### Validação do dashboard Grafana no destino
 
-Ranking horizontal de pacotes com `volkovlabs-echarts-panel`, depois de validar a sintaxe de consulta e de opções do painel. Validar também as tabelas Business Text em uma instância real.
+O export V2 e os componentes Business Text estão em `grafana/`. O painel inclui rankings, barras de hosts e blocos de pacotes sem depender de ECharts. Registrar importação, versão do plugin Zabbix e comparação dos dados em uma instância de destino conforme [grafana.md](grafana.md).
+
+### Cobertura e interpretação no dashboard
+
+Distinguir ausência de dados de zero no índice e nas somas. Rever a apresentação de UNKNOWN e isolar o estado dos filtros quando houver várias cópias do painel. Esses limites estão documentados no guia Grafana.
 
 ## Baixa
 

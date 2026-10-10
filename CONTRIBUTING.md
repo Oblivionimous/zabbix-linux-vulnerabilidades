@@ -20,6 +20,17 @@ git diff --stat docs/referencia-template.md
 
 Se o template mudou, `docs/referencia-template.md` deve ser regenerado e incluído no commit.
 
+## Documentação e exports
+
+- Use os nomes e chaves do YAML versionado para documentar o template.
+- Diferencie versão registrada no export, validação estrutural e teste em uma instância real.
+- Preserve os UUIDs do Zabbix e o formato V2 do dashboard Grafana.
+- Ao alterar os arquivos `grafana/business-text-*`, atualize também os campos correspondentes no JSON importável.
+- Mantenha `ZABBIX_DATASOURCE_UID` nas duas consultas do arquivo publicado. Configure o UID real somente na cópia local de importação.
+- Remova metadados de usuário, revisão e instância antes de versionar um export.
+- Não inclua credenciais, dados de produção ou capturas sem revisão. Identifique dados simulados nas prévias.
+- Revise links relativos e instruções de importação. Veja [docs/publicacao.md](docs/publicacao.md).
+
 ## Versionamento
 
 O projeto segue SemVer. Mudanças no formato do `report.json` que removem campos exigem versão maior. A versão do template Zabbix no bloco `vendor` acompanha a versão suportada do Zabbix.

@@ -12,6 +12,19 @@ Este arquivo é gerado por `tests/gerar_referencia.py` a partir de `zabbix/templ
 | Grupo | Templates/Security |
 | Tags do template | `scope: security`, `target: linux` |
 
+## Inventário
+
+| Objeto | Quantidade |
+|---|---|
+| Itens | 25 |
+| Itens dependentes | 24 |
+| Triggers | 8 |
+| Gráficos | 4 |
+| Dashboards | 1 |
+| Widgets | 3 |
+| Macros | 6 |
+| Value maps | 2 |
+
 ## Item mestre
 
 O item `vfs.file.contents[/var/lib/zabbix-vuln/report.json]` do tipo agente ativo lê o arquivo JSON a cada 30m e não guarda histórico. Todos os demais itens são dependentes dele e extraem campos por JSONPath.
