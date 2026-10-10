@@ -18,7 +18,7 @@ O código do painel foi executado localmente para dois hosts simulados. A imagem
 
 ## Zabbix: dashboard do host
 
-![Ilustração do dashboard de host no Zabbix com dois problemas de segurança e dois gráficos de CVEs corrigíveis](assets/zabbix-dashboard-exemplo.png)
+<img width="2552" height="946" alt="image" src="https://github.com/user-attachments/assets/3eb7d27b-69ea-4859-9f10-bd486490fb43" />
 
 Os nomes e a disposição dos três widgets seguem [template_linux_vulnerabilidades.yaml](../zabbix/template_linux_vulnerabilidades.yaml): um widget de problemas com `scope: security` e dois gráficos. O layout do frontend é aproximado.
 
