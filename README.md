@@ -72,7 +72,7 @@ Prévia local com dados simulados. Ela não comprova importação ou consultas e
 
 ### Zabbix
 
-![Ilustração do dashboard de host no Zabbix com os três widgets do template e dados simulados](docs/assets/zabbix-dashboard-exemplo.png)
+<img width="2557" height="955" alt="image" src="https://github.com/user-attachments/assets/16b355f7-f51f-428c-96fb-df7ae9a3237b" />
 
 Interface aproximada, baseada nos widgets do YAML e no relatório de exemplo. O histórico dos gráficos é fictício.
 
