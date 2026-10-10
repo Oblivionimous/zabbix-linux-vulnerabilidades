@@ -6,7 +6,7 @@ As imagens apresentam o dashboard Grafana, o template Zabbix e o fluxo de coleta
 |---|---|
 | Grafana | Código do painel Business Text executado localmente com dados simulados |
 | Zabbix: dashboard do host | Interface aproximada, com os três widgets definidos no YAML |
-| Zabbix: Latest data | Interface aproximada, com quinze itens dependentes do template |
+| Zabbix: Latest data | Interface aproximada, com 24 itens dependentes do template |
 | Coleta e relatório | Comandos de leitura com saídas ilustrativas e recorte do relatório de exemplo |
 | Fluxo de coleta | Diagrama baseado nos scripts, template e dashboard versionados |
 
