@@ -131,11 +131,11 @@ Uma mesma CVE que atinge `kernel`, `kernel-core` e `kernel-modules` gera três a
 
 A marca de corrigível é agregada por CVE com uma operação lógica OU sobre `FixedVersion`. A correção em um achado não garante correção em todos os pacotes daquela CVE.
 
-No Grafana, os totais da frota somam os contadores por host. A mesma CVE em dois hosts conta duas vezes. O ranking agrupa identificadores, mas recebe somente as quinze entradas de cada host. Veja [grafana.md](grafana.md).
+No Grafana, os totais dos hosts somam os contadores por host. A mesma CVE em dois hosts conta duas vezes. O ranking agrupa identificadores, mas recebe somente as quinze entradas de cada host. Veja [grafana.md](grafana.md).
 
 ## Limitações conhecidas
 
 - O campo `top_cves` guarda só 15 entradas ordenadas por severidade e CVSS. CVEs corrigíveis de severidade baixa podem ficar fora dele. Os contadores numéricos não têm esse limite.
 - A métrica `last_patch_days` mede a última instalação de qualquer pacote, inclusive os que não são de segurança.
-- O trivy só conhece o que a base de vulnerabilidades sabe. Uma base desatualizada gera falsa sensação de segurança. O monitoramento da idade da base está no [roadmap](roadmap.md).
+- O trivy só conhece o que a base de vulnerabilidades sabe. Uma base desatualizada gera falsa sensação de segurança. O template ainda não monitora a idade da base.
 - O script emite um aviso de descontinuação de `datetime.utcnow()` em Python 3.12 ou superior. O aviso não altera o resultado.

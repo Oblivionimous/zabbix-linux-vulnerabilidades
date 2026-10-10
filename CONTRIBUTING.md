@@ -29,7 +29,7 @@ Se o template mudou, `docs/referencia-template.md` deve ser regenerado e incluí
 - Mantenha `ZABBIX_DATASOURCE_UID` nas duas consultas do arquivo publicado. Configure o UID real somente na cópia local de importação.
 - Remova metadados de usuário, revisão e instância antes de versionar um export.
 - Não inclua credenciais, dados de produção ou capturas sem revisão. Identifique dados simulados nas prévias.
-- Revise links relativos e instruções de importação. Veja [docs/publicacao.md](docs/publicacao.md).
+- Revise links relativos e instruções de importação em [docs/zabbix.md](docs/zabbix.md) e [docs/grafana.md](docs/grafana.md).
 
 ## Versionamento
 

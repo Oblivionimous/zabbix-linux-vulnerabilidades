@@ -72,9 +72,9 @@ Prévia local com dados simulados. Ela não comprova importação ou consultas e
 
 ### Zabbix
 
-<img width="2557" height="955" alt="image" src="https://github.com/user-attachments/assets/16b355f7-f51f-428c-96fb-df7ae9a3237b" />
+<img width="2557" height="955" alt="Dashboard do host Zabbix server em teste real no Zabbix 7.0.31, com problemas e gráficos de vulnerabilidades" src="https://github.com/user-attachments/assets/16b355f7-f51f-428c-96fb-df7ae9a3237b" />
 
-Interface aproximada, baseada nos widgets do YAML e no relatório de exemplo. O histórico dos gráficos é fictício.
+Captura de teste real no ambiente **Zabbix Testes**, com Zabbix **7.0.31**. O dashboard do host **Zabbix server** apresenta os problemas e o histórico coletado no ambiente.
 
 A [galeria da integração](docs/galeria.md) também apresenta Latest data, coleta e relatório JSON, além do fluxo entre Linux, Zabbix e Grafana.
 
@@ -88,13 +88,11 @@ A [galeria da integração](docs/galeria.md) também apresenta Latest data, cole
 | [docs/zabbix.md](docs/zabbix.md) | Agente, importação do template, vínculo, macros e validação |
 | [docs/referencia-template.md](docs/referencia-template.md) | Itens, triggers, gráficos, macros e widgets gerados a partir do YAML |
 | [docs/grafana.md](docs/grafana.md) | Importação do dashboard, plugins, consultas, filtros, índice de saúde e limites |
-| [docs/galeria.md](docs/galeria.md) | Prévias do Grafana e Zabbix, relatório de exemplo e diagrama da coleta |
-| [docs/publicacao.md](docs/publicacao.md) | Revisão dos exports, verificações e preparação para publicação no GitHub |
+| [docs/galeria.md](docs/galeria.md) | Capturas de testes reais do Zabbix, prévia Grafana, relatório de exemplo e diagrama da coleta |
 | [docs/operacao.md](docs/operacao.md) | Rotina, atualização, runbook por trigger |
 | [docs/troubleshooting.md](docs/troubleshooting.md) | Sintomas, causas e correções |
 | [docs/piloto.md](docs/piloto.md) | Resultados dos três hosts piloto |
 | [docs/licoes-aprendidas.md](docs/licoes-aprendidas.md) | Problemas encontrados na construção e como foram resolvidos |
-| [docs/roadmap.md](docs/roadmap.md) | Melhorias planejadas |
 
 ## Estrutura do repositório
 

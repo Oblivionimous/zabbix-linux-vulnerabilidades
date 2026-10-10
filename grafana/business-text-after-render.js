@@ -379,7 +379,7 @@ function desenhar() {
   const nCrit = todos.filter((r) => r.nivel === "critico").length, nAten = todos.filter((r) => r.nivel === "atencao").length, nNorm = todos.length - nCrit - nAten;
 
   const corScore = corSaude(scoreMed);
-  const veredito = scoreMed >= 90 ? "Frota saudável" : scoreMed >= 70 ? "Requer atenção" : "Situação crítica";
+  const veredito = scoreMed >= 90 ? "Hosts saudáveis" : scoreMed >= 70 ? "Requer atenção" : "Situação crítica";
 
   // Postura: medidor + resumo
   const postura = '<div class="vz-post">' + medidor(scoreMed, corScore) +
@@ -413,8 +413,8 @@ function desenhar() {
   let pacs = agregarPacotes(sel);
   if (b) pacs = pacs.filter((p) => p.nome.toLowerCase().includes(b));
 
-  // Frota: um quadrado por host, colorido pelo nível
-  const frota = '<div class="vz-frota" role="group" aria-label="Hosts. Selecione um para filtrar o painel">' + todos.map((r) => {
+  // Hosts: um quadrado por host, colorido pelo nível
+  const quadroHosts = '<div class="vz-hosts" role="group" aria-label="Hosts. Selecione um para filtrar o painel">' + todos.map((r) => {
     const [rot] = NIVEL[r.nivel];
     const ch = (r.fixC || 0) + (r.fixH || 0);
     return '<button type="button" class="vz-sq vz-' + r.nivel + '" data-host="' + esc(r.host) + '" aria-pressed="' + (r.host === est.host) + '" title="' + esc(r.host) + ", " + rot + ", saúde " + r.score + ", " + ch + ' Critical e High corrigíveis" aria-label="' + esc(r.host) + ", " + rot + ", saúde " + r.score + ", " + ch + ' CVEs Critical e High corrigíveis"><span class="vz-num" aria-hidden="true">' + (ch > 99 ? "99+" : ch) + "</span></button>";
@@ -466,7 +466,7 @@ function desenhar() {
     '<div class="vz-f"><label for="vz-busca">Filtrar por CVE ou pacote</label><input id="vz-busca" class="vz-campo vz-busca" data-vz="busca" type="search" placeholder="Ex.: CVE-2024 ou openssl" autocomplete="off" value="' + esc(est.busca) + '"></div>' +
     '<label class="vz-tg"><input type="checkbox" role="switch" data-vz="corrig"' + (est.corrig ? " checked" : "") + '><span aria-hidden="true"></span>Só corrigíveis</label></div>' +
     (filtros.length ? '<div class="vz-filtros" aria-live="polite">' + filtros.join("") + "</div>" : "") +
-    '<section class="vz-sec"><h3>' + icone("server") + 'Frota</h3>' + frota + "</section>" +
+    '<section class="vz-sec"><h3>' + icone("server") + 'Hosts</h3>' + quadroHosts + "</section>" +
     '<section class="vz-sec vz-so-largo"><h3>' + icone("bell") + "Pontos de atenção</h3>" + blocoAlertas + "</section>" +
     "</aside>" +
     '<main class="vz-main">' +

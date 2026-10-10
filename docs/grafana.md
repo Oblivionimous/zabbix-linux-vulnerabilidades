@@ -82,12 +82,12 @@ Atualizar o dashboard não executa outra varredura. Aumente a janela se faltarem
 
 ## Filtros
 
-- **Escopo:** seleciona todos os hosts ou um host. Quadrados da frota e nomes de hosts também alteram a seleção.
+- **Escopo:** seleciona todos os hosts ou um host. Quadrados dos hosts e nomes de hosts também alteram a seleção.
 - **Filtrar por CVE ou pacote:** restringe a tabela de CVEs e os blocos de pacotes. Não recalcula os indicadores gerais.
 - **Só corrigíveis:** restringe a tabela de CVEs. Não filtra os pacotes nem os contadores.
 - **Legenda do gráfico:** mostra ou oculta cada série.
 
-A frota e o mapa de calor continuam mostrando todos os hosts retornados. A seleção de host altera cartões, exposição, composição, rankings e pontos de atenção.
+O quadro de hosts e o mapa de calor continuam mostrando todos os hosts retornados. A seleção de host altera cartões, exposição, composição, rankings e pontos de atenção.
 
 **Última coleta** mostra a maior data entre todos os hosts retornados. Confira também a data de cada host no mapa de calor.
 
@@ -162,7 +162,7 @@ Os filtros ficam em `window.__vulnvz`. Múltiplas cópias do painel na mesma pá
 2. Confira Critical, High, CVEs únicas, timestamp, status e reboot.
 3. Confira os rankings e a amostra mais recente em **Inspect > Data**.
 4. Teste seleção de host, busca, Só corrigíveis e legenda do gráfico.
-5. Verifique que a frota e o mapa de calor mantêm o escopo geral.
+5. Verifique que o quadro de hosts e o mapa de calor mantêm o escopo geral.
 6. Aguarde uma atualização e confira erros no console do navegador.
 7. Confira um host com coleta atrasada ou erro antes do uso operacional.
 
