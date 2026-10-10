@@ -16,24 +16,7 @@ A coleta combina duas fontes. O gerenciador de pacotes nativo informa os avisos 
 
 ## Como funciona
 
-```
- Host Linux                                                 Zabbix
-+--------------------------------------------+        +-------------------------+
-| vuln-collect.timer (systemd, diário)       |        | Item mestre (agente     |
-|   -> vuln-collect.service (root)           |        | ativo, a cada 30 min)   |
-|        vuln-collect.py                     |        | vfs.file.contents[...]  |
-|          1 gerenciador de pacotes (dnf/apt)|        |   -> 24 itens           |
-|          2 trivy rootfs /                  |        |      dependentes        |
-|        grava /var/lib/zabbix-vuln/         |  lê    |      (JSONPath)         |
-|              report.json  (0644)           |------->|   -> 8 triggers         |
-+--------------------------------------------+        |   -> gráficos e         |
-| zabbix-agent / zabbix-agent2 (usuário      |        |      dashboard          |
-| zabbix, somente leitura do arquivo)        |        +------------+------------+
-+--------------------------------------------+                     |
-                                                                    v
-                                                          Grafana (tabelas e
-                                                          rankings por host)
-```
+![Fluxo de coleta do Linux ao Zabbix e Grafana](docs/assets/fluxo-coleta.svg)
 
 A coleta roda como root e o agente Zabbix apenas lê o arquivo pronto. Isso evita `sudo` para o usuário `zabbix` e evita estourar o timeout do agente, porque a varredura leva de segundos a minutos. Os detalhes estão em [docs/arquitetura.md](docs/arquitetura.md).
 
@@ -79,9 +62,21 @@ No frontend do Zabbix, importe `zabbix/template_linux_vulnerabilidades.yaml` em 
 
 Para o Grafana, importe `grafana/dashboard_linux_vulnerabilidades.v2.json` após substituir as duas ocorrências de `ZABBIX_DATASOURCE_UID` pelo UID da sua fonte. O export de origem registra Grafana 13.2.3 e Business Text 6.3.0. A versão do plugin Zabbix não está registrada. Confira a importação e as consultas no ambiente de destino conforme [docs/grafana.md](docs/grafana.md).
 
+## Prévias
+
+### Grafana
+
 ![Prévia com dados simulados](docs/assets/grafana-exemplo.png)
 
 Prévia local com dados simulados. Ela não comprova importação ou consultas em uma instância Grafana.
+
+### Zabbix
+
+![Ilustração do dashboard de host no Zabbix com os três widgets do template e dados simulados](docs/assets/zabbix-dashboard-exemplo.png)
+
+Interface aproximada, baseada nos widgets do YAML e no relatório de exemplo. O histórico dos gráficos é fictício.
+
+A [galeria da integração](docs/galeria.md) também apresenta Latest data, coleta e relatório JSON, além do fluxo entre Linux, Zabbix e Grafana.
 
 ## Documentação
 
@@ -93,6 +88,7 @@ Prévia local com dados simulados. Ela não comprova importação ou consultas e
 | [docs/zabbix.md](docs/zabbix.md) | Agente, importação do template, vínculo, macros e validação |
 | [docs/referencia-template.md](docs/referencia-template.md) | Itens, triggers, gráficos, macros e widgets gerados a partir do YAML |
 | [docs/grafana.md](docs/grafana.md) | Importação do dashboard, plugins, consultas, filtros, índice de saúde e limites |
+| [docs/galeria.md](docs/galeria.md) | Prévias do Grafana e Zabbix, relatório de exemplo e diagrama da coleta |
 | [docs/publicacao.md](docs/publicacao.md) | Revisão dos exports, verificações e preparação para publicação no GitHub |
 | [docs/operacao.md](docs/operacao.md) | Rotina, atualização, runbook por trigger |
 | [docs/troubleshooting.md](docs/troubleshooting.md) | Sintomas, causas e correções |

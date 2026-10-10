@@ -6,6 +6,10 @@ A solução separa a coleta da leitura. Um timer do systemd executa o script com
 
 Um item mestre sem histórico recebe o JSON inteiro. Vinte e quatro itens dependentes extraem cada campo por JSONPath. Isso gera uma única leitura de arquivo por ciclo e muitos indicadores numéricos.
 
+![Fluxo entre timer e coletor Linux, relatório JSON, agente ativo, template Zabbix e dashboard Grafana](assets/fluxo-coleta.svg)
+
+O diagrama distingue coleta diária, leitura do relatório a cada `30m` e refresh do Grafana a cada `5m`. Veja as telas e o relatório na [galeria](galeria.md).
+
 ## Decisões de projeto
 
 ### Arquivo e timer em vez de UserParameter
