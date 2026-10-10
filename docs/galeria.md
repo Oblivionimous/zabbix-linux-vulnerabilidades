@@ -30,7 +30,7 @@ Consulte [zabbix.md](zabbix.md) para importação, vínculo, macros e interpreta
 
 ## Zabbix: Latest data
 
-![Ilustração de Latest data no Zabbix, filtrada por host-exemplo e pela tag do template, com quinze valores do relatório de exemplo](assets/zabbix-latest-data-exemplo.png)
+<img width="2541" height="950" alt="image" src="https://github.com/user-attachments/assets/79b7fe28-417f-4bef-89a5-daea5c1cbab2" />
 
 A imagem mostra uma seleção de quinze dos 24 itens dependentes. Os nomes vêm do template e os valores são extraídos pelos respectivos JSONPaths. O timestamp usa UTC. O value map de reboot converte `0` em `Não`.
 
