@@ -113,7 +113,7 @@ Para vários hosts, use **Mass update > Link templates**. Preserve os demais ví
 
 Em **Monitoring > Latest data**, filtre pelo host e pela tag de item `template: linux-vulnerabilidades`.
 
-<img width="2553" height="950" alt="image" src="https://github.com/user-attachments/assets/c007f79e-22eb-449c-9dfb-4cd0c578e7d1" />
+<img width="2553" height="952" alt="image" src="https://github.com/user-attachments/assets/c408b6e0-c6d4-494b-ab59-57eb29799da9" />
 
 Interface aproximada e tempos de check ilustrativos. Os nomes e valores seguem o template e o relatório de exemplo. A [galeria](galeria.md#zabbix-latest-data) descreve a origem dos dados.
 
@@ -178,7 +178,7 @@ Em **Monitoring > Hosts > Dashboards**, selecione **Vulnerabilidades - visão ge
 - Gráfico de corrigíveis por severidade.
 - Gráfico de corrigíveis Critical e High em SO e aplicações.
 
-![Ilustração do dashboard Zabbix com um widget de problemas e dois gráficos definidos no template](assets/zabbix-dashboard-exemplo.png)
+<img width="2553" height="950" alt="image" src="https://github.com/user-attachments/assets/4d190aeb-9b99-4114-8b4e-27bc19c7ec8f" />
 
 Prévia ilustrativa, com dados de exemplo e histórico fictício. O layout do frontend é aproximado. Veja a [origem da imagem](galeria.md#zabbix-dashboard-do-host).
 
