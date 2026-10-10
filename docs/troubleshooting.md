@@ -28,7 +28,7 @@ Em agente clássico o log é `/var/log/zabbix/zabbix_agentd.log`.
 | Coleta muito lenta | Trivy percorrendo storage grande | Adicionar o diretório em `/etc/zabbix-vuln/extra-skip-dirs` |
 | Serviço encerrado por memória | Estouro de `MemoryMax` | Aumentar o limite no service |
 | Primeira execução demorada | Download da base de vulnerabilidades | Esperado. As seguintes são mais rápidas |
-| Falha ao baixar a base | Sem saída HTTPS para os registros do trivy | Liberar a saída ou usar um espelho interno, veja o [roadmap](roadmap.md) |
+| Falha ao baixar a base | Sem saída HTTPS para os registros do trivy | Verificar DNS, proxy e saída HTTPS para os registros usados pelo Trivy |
 | `Could not resolve host: pkg.aquasec.com` no dnf | Repositório do trivy configurado e sem DNS | Remover o arquivo `.repo` e instalar pelo pacote da release |
 
 ## Números inesperados

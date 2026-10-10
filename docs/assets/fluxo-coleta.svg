@@ -19,6 +19,6 @@
 <path d="M1121 392 H1205" class="line"/><text x="1170" y="365" class="small" text-anchor="middle">API</text>
 <text x="1247" y="189" class="h">Grafana</text><text x="1247" y="219" class="small">Visualização opcional</text>
 <rect x="1247" y="245" width="271" height="97" rx="5" fill="#e7eef6"/><text x="1267" y="279" class="body">Fonte Zabbix</text><text x="1267" y="309" class="small">Métricas e rankings JSON</text><path d="M1383 344 V369" class="line"/>
-<rect x="1247" y="377" width="271" height="154" rx="5" fill="#f1f4f7"/><text x="1267" y="411" class="body">Business Text</text><text x="1267" y="445" class="small">Indicadores da frota</text><text x="1267" y="473" class="small">Rankings e filtros</text><text x="1267" y="501" class="small">Mapa de calor</text>
+<rect x="1247" y="377" width="271" height="154" rx="5" fill="#f1f4f7"/><text x="1267" y="411" class="body">Business Text</text><text x="1267" y="445" class="small">Indicadores dos hosts</text><text x="1267" y="473" class="small">Rankings e filtros</text><text x="1267" y="501" class="small">Mapa de calor</text>
 <text x="1267" y="590" class="body">Refresh: 5 min</text><text x="1267" y="623" class="small">Atualiza a visualização.</text><text x="1267" y="650" class="small">Não executa nova coleta.</text>
 <rect x="55" y="783" width="1490" height="93" rx="6" fill="#e0eaf3"/><text x="80" y="821" class="body" font-weight="700">Três frequências diferentes</text><text x="80" y="852" class="body">Coleta diária no Linux → leitura do relatório a cada 30 min → refresh do Grafana a cada 5 min.</text></svg>

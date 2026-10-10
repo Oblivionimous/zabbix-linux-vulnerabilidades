@@ -113,9 +113,9 @@ Para vários hosts, use **Mass update > Link templates**. Preserve os demais ví
 
 Em **Monitoring > Latest data**, filtre pelo host e pela tag de item `template: linux-vulnerabilidades`.
 
-<img width="2553" height="952" alt="image" src="https://github.com/user-attachments/assets/c408b6e0-c6d4-494b-ab59-57eb29799da9" />
+<img width="2553" height="952" alt="Latest data do host Zabbix server em teste real, com os itens de vulnerabilidades e seus valores coletados" src="https://github.com/user-attachments/assets/c408b6e0-c6d4-494b-ab59-57eb29799da9" />
 
-Interface aproximada e tempos de check ilustrativos. Os nomes e valores seguem o template e o relatório de exemplo. A [galeria](galeria.md#zabbix-latest-data) descreve a origem dos dados.
+Captura de teste real no **Zabbix 7.0.31**, no ambiente **Zabbix Testes**. Os valores e horários de check pertencem à coleta do host **Zabbix server**. A [galeria](galeria.md#zabbix-latest-data) detalha os itens apresentados.
 
 | Item | Resultado esperado |
 |---|---|
@@ -178,9 +178,9 @@ Em **Monitoring > Hosts > Dashboards**, selecione **Vulnerabilidades - visão ge
 - Gráfico de corrigíveis por severidade.
 - Gráfico de corrigíveis Critical e High em SO e aplicações.
 
-<img width="2553" height="950" alt="image" src="https://github.com/user-attachments/assets/4d190aeb-9b99-4114-8b4e-27bc19c7ec8f" />
+<img width="2553" height="950" alt="Dashboard do host Zabbix server em teste real, com um widget de problemas e dois gráficos de vulnerabilidades" src="https://github.com/user-attachments/assets/4d190aeb-9b99-4114-8b4e-27bc19c7ec8f" />
 
-Prévia ilustrativa, com dados de exemplo e histórico fictício. O layout do frontend é aproximado. Veja a [origem da imagem](galeria.md#zabbix-dashboard-do-host).
+Captura de teste real do dashboard do host **Zabbix server**, no ambiente **Zabbix Testes**, com Zabbix **7.0.31**. Os problemas e gráficos mostram os dados coletados no ambiente. Veja a [galeria](galeria.md#zabbix-dashboard-do-host).
 
 O widget de problemas não mostra `availability` e `configuration`. Consulte a lista geral de problemas para acompanhar coleta e reboot.
 

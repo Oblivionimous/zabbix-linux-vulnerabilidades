@@ -6,20 +6,27 @@ O formato segue o padrão Keep a Changelog e o versionamento segue SemVer.
 
 ### Adicionado
 
-- Galeria com prévias ilustrativas do dashboard Zabbix, Latest data e verificação da coleta, com dados de exemplo identificados.
+- Galeria com capturas de testes reais do dashboard Zabbix e Latest data no Zabbix 7.0.31, além de uma ilustração da verificação da coleta.
 - Diagrama SVG do fluxo entre Linux, Zabbix e Grafana.
 - Export Grafana V2 com marcador de UID da fonte Zabbix, sem metadados internos da instância de origem.
 - JavaScript, CSS e Content do painel Business Text extraídos para revisão.
-- Prévia local com dados simulados e guia de preparação da publicação no GitHub.
+- Prévia local do Grafana com dados simulados.
 
 ### Alterado
 
+- Terminologia padronizada para hosts na documentação, no painel Grafana e no diagrama.
+- Legendas e textos alternativos das capturas Zabbix identificam o ambiente de testes reais.
+- Contagem da galeria corrigida para um item mestre e 24 dependentes.
 - Guias Zabbix e Grafana com importação, validação, consultas, filtros e limites de interpretação.
 - Correção da sintaxe de `ServerActive` e dos níveis de configuração de macros.
 - Documentação do índice de saúde, dos limites dos rankings e da soma de CVEs por host.
 - Janela inicial do dashboard para as últimas `48h`, com atualização a cada `5m`.
 - Descrições do template sobre apt, timestamp, macros e idade de CVEs, sem alterar chaves, UUIDs ou expressões.
 - Referência gerada com inventário quantitativo do template e saída LF.
+
+### Removido
+
+- Documentos de preparação da publicação e melhorias planejadas, com ajuste das referências nos guias.
 
 ## [1.0.0] - 2026-09-28
 
@@ -38,6 +45,6 @@ Primeira versão publicada, validada em três hosts piloto.
 ### Conhecido
 
 - O script emite um aviso de descontinuação de `datetime.utcnow()` no Python 3.12 ou superior.
-  O aviso vai para stderr e não afeta o resultado. A correção está no roadmap.
+  O aviso vai para stderr e não afeta o resultado.
 - O campo `top_cves` guarda apenas as 15 CVEs de maior severidade e CVSS.
   CVEs corrigíveis de severidade menor podem ficar fora do relatório.

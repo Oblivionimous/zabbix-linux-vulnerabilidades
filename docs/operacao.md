@@ -61,7 +61,7 @@ A base fica em `/var/cache/trivy`. Para ver a data de atualização.
 jq . /var/cache/trivy/db/metadata.json
 ```
 
-Uma base velha faz o trivy deixar de ver CVEs recentes sem gerar erro. Este indicador ainda não é monitorado pelo template e consta no [roadmap](roadmap.md).
+Uma base velha faz o trivy deixar de ver CVEs recentes sem gerar erro. O template ainda não monitora a idade da base. Confira a data no arquivo de metadados.
 
 ## Runbook por trigger
 
