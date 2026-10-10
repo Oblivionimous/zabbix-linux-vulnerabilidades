@@ -1,5 +1,11 @@
 # Operação
 
+## Prévia da verificação
+
+![Prévia ilustrativa de comandos de leitura do timer e relatório, com os status dos componentes e contadores do arquivo de exemplo](assets/coleta-relatorio-exemplo.png)
+
+As saídas são demonstrativas. Elas não foram obtidas em um host Linux nesta sessão. Consulte a [origem dos dados](galeria.md#coleta-e-relatório) e execute as verificações abaixo no ambiente real.
+
 ## Rotina
 
 | Frequência | Atividade |

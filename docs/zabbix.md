@@ -113,6 +113,10 @@ Para vários hosts, use **Mass update > Link templates**. Preserve os demais ví
 
 Em **Monitoring > Latest data**, filtre pelo host e pela tag de item `template: linux-vulnerabilidades`.
 
+![Ilustração de Latest data com quinze itens dependentes e valores do relatório de exemplo](assets/zabbix-latest-data-exemplo.png)
+
+Interface aproximada e tempos de check ilustrativos. Os nomes e valores seguem o template e o relatório de exemplo. A [galeria](galeria.md#zabbix-latest-data) descreve a origem dos dados.
+
 | Item | Resultado esperado |
 |---|---|
 | `Vuln: status da coleta` | `ok`, com os componentes do relatório também verificados |
@@ -173,6 +177,10 @@ Em **Monitoring > Hosts > Dashboards**, selecione **Vulnerabilidades - visão ge
 - Problemas abertos com `scope: security`.
 - Gráfico de corrigíveis por severidade.
 - Gráfico de corrigíveis Critical e High em SO e aplicações.
+
+![Ilustração do dashboard Zabbix com um widget de problemas e dois gráficos definidos no template](assets/zabbix-dashboard-exemplo.png)
+
+Prévia ilustrativa, com dados de exemplo e histórico fictício. O layout do frontend é aproximado. Veja a [origem da imagem](galeria.md#zabbix-dashboard-do-host).
 
 O widget de problemas não mostra `availability` e `configuration`. Consulte a lista geral de problemas para acompanhar coleta e reboot.
 

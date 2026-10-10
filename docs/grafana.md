@@ -4,6 +4,8 @@ O **Dashboard de Vulnerabilidades - Visão Geral** reúne os indicadores dos hos
 
 Importe [grafana/dashboard_linux_vulnerabilidades.v2.json](../grafana/dashboard_linux_vulnerabilidades.v2.json). O JSON contém consultas, JavaScript, CSS e layout. Não é necessário montar cada tabela manualmente.
 
+A [galeria da integração](galeria.md) reúne a prévia do painel, exemplos de telas Zabbix e o fluxo de coleta. Todas as prévias têm a origem identificada.
+
 ## Compatibilidade e validação
 
 | Componente | Evidência do export fornecido |

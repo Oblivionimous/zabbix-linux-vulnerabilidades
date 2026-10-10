@@ -6,6 +6,8 @@ O formato segue o padrão Keep a Changelog e o versionamento segue SemVer.
 
 ### Adicionado
 
+- Galeria com prévias ilustrativas do dashboard Zabbix, Latest data e verificação da coleta, com dados de exemplo identificados.
+- Diagrama SVG do fluxo entre Linux, Zabbix e Grafana.
 - Export Grafana V2 com marcador de UID da fonte Zabbix, sem metadados internos da instância de origem.
 - JavaScript, CSS e Content do painel Business Text extraídos para revisão.
 - Prévia local com dados simulados e guia de preparação da publicação no GitHub.
